@@ -9,7 +9,7 @@ I hereby publish them filez:
 
 ## Etc.
 
-- *italicized unsorted item1*
-- *italicized unsorted item2*
-  - **unsorted item2a in bold**
+- *italicized unordered item1*
+- *italicized unordered item2*
+  - **unordered item2a in bold**
 
