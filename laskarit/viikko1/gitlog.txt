@@ -1,0 +1,104 @@
+commit 0d2e5e0807d40a7d0f2ae11e037b65beefa60786
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 18:19:21 2023 +0200
+
+    tiedostomuutokset
+
+ tiedostoja/file2             | 0
+ tiedostoja/{file1 => file22} | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 5700c11510f07da1a44ba1be6188797599d809d0
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 18:00:05 2023 +0200
+
+    new files
+
+ tiedostoja/file1 | 0
+ tiedostoja/file2 | 0
+ tiedostoja/file3 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 309ce22de9e0a5e4c661bb196ada71ef8b756f3c
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:59:47 2023 +0200
+
+    joku modaus
+
+ eka.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit ec0c2d3d2a2df6a555a4c15a5f46faed92843400
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:47:56 2023 +0200
+
+    faf
+
+ eka.txt    | 1 +
+ kolmas.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit d6b4101e0d2c19d71c7898583b85694e97df83ed
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:23:35 2023 +0200
+
+    rename
+
+ tiedosto.txt => eka.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit a6bd62147e799b1a119aaaff1dc829dcfb206703
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:22:49 2023 +0200
+
+    deleted
+
+ toinen.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit fe77546fb508bc304017b52ccb615095e1ecaa96
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:20:23 2023 +0200
+
+    stuff ja jokin
+
+ stuff/jokin | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit fc58acb68884d86c61b3c0116eb3092c0d5e2798
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:19:27 2023 +0200
+
+    modded kolmas+toinen
+
+ kolmas.txt | 1 +
+ toinen.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit ab95099ca840e146b3cafd680d3259d923fde0fd
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:18:35 2023 +0200
+
+    added kolmas
+
+ kolmas.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 99a2487389a386740a1507068235ef8dd7c44e0c
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 17:16:26 2023 +0200
+
+    muutos ja lisäys
+
+ tiedosto.txt | 1 +
+ toinen.txt   | 0
+ 2 files changed, 1 insertion(+)
+
+commit 8e858ec7d05d368c14745be12735d51d5184ffdf
+Author: Tamás Tóth <tamas.toth@helsinki.fi>
+Date:   Mon Mar 13 15:32:14 2023 +0200
+
+    tiedosto.txt luotu
+
+ tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
