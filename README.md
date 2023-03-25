@@ -9,4 +9,4 @@ Tänne joku kuvaus **lihavoidulla** ja *kursivoidulla*
 - [gitlog](laskarit/viikko1/gitlog.txt)
 
 ### Viikko 2
-- ![Coverage at 100%](laskarit/viikko2/unicafe/coverage.png)
+![Coverage at 100%](laskarit/viikko2/unicafe/coverage.png)
