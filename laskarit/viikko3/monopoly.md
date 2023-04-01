@@ -36,8 +36,8 @@ classDiagram
         talojen_maara
 
     }
-
-    notes for id3 lalala
+    id3 "1" --> "0-5" Rakennus
+    note for Rakennus "5 taloa on 1 hotelli"
 
     id3 ..> Pelaaja
 
