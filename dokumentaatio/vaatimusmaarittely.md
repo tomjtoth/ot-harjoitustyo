@@ -48,3 +48,4 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
   - esim neliö/ympyrä raahattava hiirellä
 - template:in toteutus
 - mahdollisesti *opettajarooli*
+- testing git on new laptop
