@@ -10,6 +10,9 @@ packages = [{include = "ot_harjoitustyo"}]
 python = "^3.8"
 
 
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.2.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
