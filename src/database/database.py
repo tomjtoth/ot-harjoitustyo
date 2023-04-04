@@ -24,7 +24,7 @@ def create_scheme():
     create table if not exists drawings(
         id integer primary key,
         name text not null,
-        svg_data text not null, --or blob, idk yet, no idea what SVG libs are available in python...
+        svg_data text not null --or blob, idk yet, no idea what SVG libs are available in python...
     );
 
     create table if not exists templates(
@@ -53,32 +53,35 @@ def login_register(username: str, password: str, teacher: bool = False):
     
     # storing pw as md5sum BAD IDEA!!!!
     password = hashlib.md5(password.encode('utf-8')).hexdigest()
-    db_pass, db_role, _ = db.execute("""
+    db_res = db.execute("""
     select password, iif(t.user_id, 1, 0) as role
     from users u
     left join teachers t on t.user_id == u.id
     where username=?""", [username]).fetchone()
     
     # user exists
-    if db_pass:
-        if password != db_pass:
+    if db_res:
+        
+        role = bool(db_res[1])
+
+        if password != db_res[0]:
             # wrong password
-            return False, bool(db_role)
+            return False, role
     
     # user does not exist, registering here
     else:
-        lastrow = db.execute("insert into users(username, password) values (?, ?)"
+        db.execute("insert into users(username, password) values (?, ?)"
             , [username, password])
         
         if teacher:
-            db.execute("insert into teachers values(?)",[lastrow])
+            role = teacher
+            db.execute("insert into teachers values(?)", [db.lastrow])
     
     # either login or register succeeded
-    return True, bool(db_role)
+    return True, role
 
 def create_drawing():
     pass
 
 def save_drawing():
     pass
-
