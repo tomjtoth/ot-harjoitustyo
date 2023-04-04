@@ -2,6 +2,8 @@
 
 Tänne joku kuvaus **lihavoidulla** ja *kursivoidulla*
 
+[CHANGELOG](dokumentaatio/changelog.md)
+
 ## Tehtävät
 
 ### Viikko 1
