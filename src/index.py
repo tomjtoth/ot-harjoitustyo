@@ -25,8 +25,8 @@ class Application(tk.Frame):
         self.password.grid(row = 1, column = 1, pady = 2)
 
 
-        tk.Button(self, text='Login/register', command=self.processInput).grid()
-        tk.Button(self, text='Quit', command=self.quit).grid()
+        tk.Button(self, text='Login/register', command=self.processInput).grid(columnspan=2)
+        tk.Button(self, text='Quit', command=self.quit).grid(columnspan=2)
     
     def processInput(self):
         user = self.username.get()
