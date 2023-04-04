@@ -1,3 +1,6 @@
+# help
+
+miten lisätään blokkeja mermaid:ssa nuolen oikealle puolelle? eli participant olisi eri korkeudella kuin muut participantit
 
 ```mermaid
 ---
