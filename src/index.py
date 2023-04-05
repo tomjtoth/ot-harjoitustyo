@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 import tkinter as tk
+from database.database import Backend
 
 # Messagebox is not visible via above tk.messagebox...
 from tkinter import messagebox as msg
 
-# this will be backed by a table in sqlite
-users = {'test':'test'}
-
-
 class Application(tk.Frame):
 
     def __init__(self, master=None):
+        db = Backend()
         tk.Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
@@ -29,17 +27,12 @@ class Application(tk.Frame):
         tk.Button(self, text='Quit', command=self.quit).grid(columnspan=2)
     
     def processInput(self):
-        user = self.username.get()
-        pw = self.password.get()
-        if user not in users:
-            users[user] = pw
-            msg.showinfo("Registration", "user successfully created")
-        elif users[user] != pw:
-            msg.showerror("Login failed", "wrong password")
+        success, teacher = db.login_register(self.username.get(), self.password.get())
+        if success:
+            msg.showinfo("Succeess", f"you're in!{' ... as a teacher' if teacher else ''}")
         else:
-            msg.showinfo("Login succeeded", "you're in!")
-            pass
-        
+            msg.showerror("Login/register failed", "wrong password")
+            
 
 
 app = Application()

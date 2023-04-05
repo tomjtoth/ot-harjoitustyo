@@ -1,17 +1,18 @@
 import unittest, os
-from database.database import create_scheme, login_register, db, DB_PATH
+from database.database import Backend
 
 
 class TestUserManagement(unittest.TestCase):
     def setUp(self):
-        create_scheme()
+        db = Backend(":memory:")
+        db.create_scheme()
     
     def test_login_register(self):
         # registration
-        self.assertEqual((True, True), login_register("root", "toor", True))
+        self.assertEqual((True, True), db.login_register("root", "toor", True))
 
         # right pw
-        self.assertEqual((False, True), login_register("root", "toor"))
+        self.assertEqual((False, True), db.login_register("root", "toor"))
 
         # wrong pw
-        self.assertEqual((False, False), login_register("root", "wrong_pw"))
+        self.assertEqual((False, False), db.login_register("root", "wrong_pw"))
