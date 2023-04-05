@@ -1,12 +1,17 @@
 import sqlite3, hashlib
 
 class Backend:
-    def __init__(path: str = "backend.db"):
+    """
+        path can be overridden for testing purposes, e.g. ":memory:"
+    """
+
+    def __init__(self, path: str = "backend.db"):
         self.path = path    
         self.db = sqlite3.connect(path)
         self.db.isolation_level = None
+        self.create_scheme()
 
-    def create_scheme():
+    def create_scheme(self):
         """
             nothing special, simply creating the scheme
         """
@@ -24,6 +29,7 @@ class Backend:
         
         --create at least 1 teacher
         -- toistuisi turhaan joka kertaa..
+        -- WiP
         /*
         insert into users(username, password) values ('root', 'toor');
         insert into teachers values(1);
@@ -49,7 +55,7 @@ class Backend:
         """)
 
     # just 1 button, no time for 2 different methodzzZZzz
-    def login_register(username: str, password: str, teacher: bool = False):
+    def login_register(self, username: str, password: str, teacher: bool = False):
         """
         password should be passed as plain text, hashing happens within this func
         3rd argument only used during registration
@@ -78,17 +84,18 @@ class Backend:
         
         # user does not exist, registering here
         else:
-            self.db.execute("insert into users(username, password) values (?, ?)"
+            cur = self.db.cursor()
+            cur.execute("insert into users(username, password) values (?, ?)"
                 , [username, password])
             
             if teacher:
-                self.db.execute("insert into teachers values(?)", [self.db.lastrow])
+                self.db.execute("insert into teachers values(?)", [cur.lastrowid])
         
         # either login or register succeeded
         return True, teacher
 
-    def create_drawing():
+    def create_drawing(self):
         pass
 
-    def save_drawing():
+    def save_drawing(self):
         pass

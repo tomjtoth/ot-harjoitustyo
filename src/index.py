@@ -8,7 +8,7 @@ from tkinter import messagebox as msg
 class Application(tk.Frame):
 
     def __init__(self, master=None):
-        db = Backend()
+        self.db = Backend()
         tk.Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
@@ -27,7 +27,7 @@ class Application(tk.Frame):
         tk.Button(self, text='Quit', command=self.quit).grid(columnspan=2)
     
     def processInput(self):
-        success, teacher = db.login_register(self.username.get(), self.password.get())
+        success, teacher = self.db.login_register(self.username.get(), self.password.get())
         if success:
             msg.showinfo("Succeess", f"you're in!{' ... as a teacher' if teacher else ''}")
         else:

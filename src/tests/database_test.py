@@ -4,15 +4,26 @@ from database.database import Backend
 
 class TestUserManagement(unittest.TestCase):
     def setUp(self):
-        db = Backend(":memory:")
-        db.create_scheme()
+        self.db = Backend(":memory:")
+        self.db.create_scheme()
     
     def test_login_register(self):
-        # registration
-        self.assertEqual((True, True), db.login_register("root", "toor", True))
+        # register teacher
+        self.assertEqual((True, True), self.db.login_register("teacher", "teacher", True))
 
-        # right pw
-        self.assertEqual((False, True), db.login_register("root", "toor"))
+        # right pw teacher
+        self.assertEqual((True, True), self.db.login_register("teacher", "teacher"))
 
-        # wrong pw
-        self.assertEqual((False, False), db.login_register("root", "wrong_pw"))
+        # wrong pw teacher
+        self.assertEqual((False, True), self.db.login_register("teacher", "wrong_pw"))
+
+
+
+        # register student
+        self.assertEqual((True, False), self.db.login_register("student", "student"))
+
+        # right pw student
+        self.assertEqual((True, False), self.db.login_register("student", "student"))
+
+        # wrong pw student
+        self.assertEqual((False, False), self.db.login_register("student", "wrong_pw"))
