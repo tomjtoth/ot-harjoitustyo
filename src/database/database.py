@@ -1,4 +1,6 @@
-import sqlite3, hashlib
+import sqlite3
+import hashlib
+
 
 class Backend:
     """
@@ -6,7 +8,7 @@ class Backend:
     """
 
     def __init__(self, path: str = "backend.db"):
-        self.path = path    
+        self.path = path
         self.db = sqlite3.connect(path)
         self.db.isolation_level = None
         self.create_scheme()
@@ -23,6 +25,7 @@ class Backend:
             --stored as md5sum, never gonna do it in PROD, pinky-promise
             password text not null
         );
+        
         create table if not exists teachers(
             user_id integer primary key references users(id)
         );
@@ -64,7 +67,7 @@ class Backend:
             - login/register succeess
             - user has teacher role
         """
-        
+
         # storing pw as md5sum BAD IDEA!!!!
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
         db_res = self.db.execute("""
@@ -72,25 +75,26 @@ class Backend:
         from users u
         left join teachers t on t.user_id == u.id
         where username=?""", [username]).fetchone()
-        
+
         # user exists
         if db_res:
-            
+
             teacher = bool(db_res[1])
 
             if password != db_res[0]:
                 # wrong password
                 return False, teacher
-        
+
         # user does not exist, registering here
         else:
             cur = self.db.cursor()
-            cur.execute("insert into users(username, password) values (?, ?)"
-                , [username, password])
-            
+            cur.execute("insert into users(username, password) values (?, ?)", [
+                        username, password])
+
             if teacher:
-                self.db.execute("insert into teachers values(?)", [cur.lastrowid])
-        
+                self.db.execute(
+                    "insert into teachers values(?)", [cur.lastrowid])
+
         # either login or register succeeded
         return True, teacher
 
