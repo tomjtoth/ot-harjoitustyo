@@ -1,10 +1,10 @@
 # SVG builder (OhTe assignment)
 
-With this app you can become the next van Gogh or Picasso, even if you're untalented!
+Sovelluksen avulla surkeimmat käyttäjätkin pystyy luoda mahtavia avantgarde kuvia!
 
 [CHANGELOG](dokumentaatio/changelog.md)
 
-## Documentation
+## Dokumentaatio
 - [vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)
 - [työtunnit](dokumentaatio/tunnit.md)
 
