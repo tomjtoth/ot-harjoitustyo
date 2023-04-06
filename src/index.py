@@ -15,6 +15,7 @@ class Application(tk.Frame):
         self.grid()
         self.create_widgets()
         self.username_re = re.compile(r"^\w{3,}$")
+        self.password_re = re.compile(r"^\w{8,16}$")
 
     def create_widgets(self):
         tk.Label(self, text='username:').grid(
@@ -33,13 +34,18 @@ class Application(tk.Frame):
 
     def process_input(self):
         username = self.username.get()
+        password = self.password.get()
         
         if not self.username_re.match(username):
-            msg.showerror("invalid username", "usernames should:\n- be more than 3 chars\n- contain only chars from a-zA-Z0-9")
+            msg.showerror("invalid username", "usernames should:\n- be more than 3 chars\n- contain only chars from a-zA-Z0-9_")
             return
             
+        if not self.password_re.match(password):
+            msg.showerror("invalid password", "passwords should:\n- be between 8 and 16 chars\n- contain only chars from a-zA-Z0-9_")
+            return
+
         success, teacher = self.db.login_register(
-            username, self.password.get())
+            username, password)
         if success:
             msg.showinfo(
                 "Succeess", f"you're in!{' ... as a teacher' if teacher else ''}")

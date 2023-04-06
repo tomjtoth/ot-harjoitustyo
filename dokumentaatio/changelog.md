@@ -10,3 +10,4 @@
 - finished up vk3 tasks, JIT!
 - migrated to class based Backend
 - login/register is now connected to Backend
+- user:pass validation added

@@ -11,7 +11,7 @@ Alussa tulee olemaan vain _opiskelija_ rooliset käyttäjät, jotkut saavat luod
 ## Käyttöliittymäluonnos
 
 Sovelluksessa tulee olemaan alla näkymät:
-- [ ] login/register/exit
+- [X] login/register/exit
 - [ ] menu (new/load/exit valinnat)
 _ [ ] piirtonäkymä (save/load/exit napit ainakin tänne)
   - [ ] _opettajat_ saavat tallentaa myös **template** -ina
@@ -21,10 +21,10 @@ _ [ ] piirtonäkymä (save/load/exit napit ainakin tänne)
 ### Ennen kirjautumista
 
 - [X] Käyttäjä saa luoda järjestelmään käyttäjätunnuksen
-  - [ ] tunnuksen on oltava ainakin 3 merkkiä ja ainutlaatuinen
-- [ ] Käyttäjä voi kirjautua järjestelmään
-  - [ ] Kirjautuminen onnistuu syötettäessä olemassaoleva käyttäjätunnus ja salasana kirjautumislomakkeelle
-  - [ ] Jos käyttäjää ei olemassa, tai salasana ei täsmää, ilmoittaa järjestelmä tästä
+  - [X] tunnuksen on oltava ainakin 3 merkkiä ja ainutlaatuinen
+- [X] Käyttäjä voi kirjautua järjestelmään
+  - [X] Kirjautuminen onnistuu syötettäessä olemassaoleva käyttäjätunnus ja salasana kirjautumislomakkeelle
+  - [X] Jos käyttäjää ei olemassa, tai salasana ei täsmää, ilmoittaa järjestelmä tästä
 
 ### Kirjautumisen jälkeen
 
@@ -48,4 +48,4 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
   - [ ] esim neliö/ympyrä raahattava hiirellä
 - [ ] template:in toteutus
 - [ ] mahdollisesti *opettajarooli*
-- [ ] salasanojen monimutkaisuus \w{8,16}
+- [X] salasanojen monimutkaisuus \w{8,16}
