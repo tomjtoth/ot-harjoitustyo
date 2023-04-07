@@ -9,15 +9,15 @@ class Backend:
 
     def __init__(self, path: str = "backend.db"):
         self.path = path
-        self.db = sqlite3.connect(path)
-        self.db.isolation_level = None
+        self.conn = sqlite3.connect(path)
+        self.conn.isolation_level = None
         self.create_scheme()
 
     def create_scheme(self):
         """
             nothing special, simply creating the scheme
         """
-        self.db.executescript("""
+        self.conn.executescript("""
         create table if not exists users(
             id integer primary key,
             username text not null,
@@ -70,7 +70,7 @@ class Backend:
 
         # storing pw as md5sum BAD IDEA!!!!
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
-        db_res = self.db.execute("""
+        db_res = self.conn.execute("""
         select password, iif(t.user_id, 1, 0) as role
         from users u
         left join teachers t on t.user_id == u.id
@@ -87,12 +87,12 @@ class Backend:
 
         # user does not exist, registering here
         else:
-            cur = self.db.cursor()
+            cur = self.conn.cursor()
             cur.execute("insert into users(username, password) values (?, ?)", [
                         username, password])
 
             if teacher:
-                self.db.execute(
+                self.conn.execute(
                     "insert into teachers values(?)", [cur.lastrowid])
 
         # either login or register succeeded

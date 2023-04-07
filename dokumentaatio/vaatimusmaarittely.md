@@ -13,7 +13,7 @@ Alussa tulee olemaan vain _opiskelija_ rooliset käyttäjät, jotkut saavat luod
 Sovelluksessa tulee olemaan alla näkymät:
 - [X] login/register/exit
 - [ ] menu (new/load/exit valinnat)
-_ [ ] piirtonäkymä (save/load/exit napit ainakin tänne)
+- [ ] piirtonäkymä (save/load/exit napit ainakin tänne)
   - [ ] _opettajat_ saavat tallentaa myös **template** -ina
 
 ## Perusversion tarjoama toiminnallisuus
