@@ -7,3 +7,5 @@
 | 5.4   | 3  | VS Code debugging + poetry selvittely, vk3 tehtävien loopuvalmistelu, migroiun luokkaan Backend  |
 | 6.4   | 4  | user:pass validaatiot, todo-app:in tkinter tutkinta |
 | 7.4   | 1  | pylint + jupyter tests in VS Code |
+| 10.4   | 2  | GUI |
+| 11.4   | 2  | login made working based on todo-app |

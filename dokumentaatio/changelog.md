@@ -11,3 +11,4 @@
 - migrated to class based Backend
 - login/register is now connected to Backend
 - user:pass validation added
+- mimicking todo-app class dynamics + fragmentation

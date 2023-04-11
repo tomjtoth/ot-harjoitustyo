@@ -1,7 +1,6 @@
 import sqlite3
 import hashlib
 
-
 class Backend:
     """
         path can be overridden for testing purposes, e.g. ":memory:"
