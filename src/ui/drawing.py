@@ -15,7 +15,7 @@ class Drawing(View):
 
     def _create_widgets(self):
         Label(self._frame,
-              text=f"You're logged in as {self._curr_user.username}"
+              text=f"You're logged in as {self._curr_user.name}"
               ).grid(row=0, column=0, sticky=W, pady=2)
 
         Button(self._frame, text='Main Menu', command=self._handle_prev).grid()

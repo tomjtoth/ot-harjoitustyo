@@ -70,11 +70,7 @@ class Backend:
     def login_register(self, username: str, password: str, teacher: bool = False):
         """
         password should be passed as plain text, hashing happens within this func
-        3rd argument only used during registration
-
-        returns 2 booleans:
-            - login/register succeess
-            - user has teacher role
+        3rd argument is only used during registration
         """
 
         # storing pw as md5sum BAD IDEA!!!!

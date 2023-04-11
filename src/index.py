@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 from tkinter import Tk
-from backend.backend import backend
 from ui.ui import Ui
-
 
 def main():
     window = Tk()

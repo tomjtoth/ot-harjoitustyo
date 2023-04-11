@@ -41,7 +41,7 @@ class Login(View):
                 usernames should:
                 - be more than 3 chars
                 - contain only chars from [a-zA-Z0-9_]
-                - may not begin with a digit [0-9]
+                - not begin with a digit [0-9]
                 """))
             return
 

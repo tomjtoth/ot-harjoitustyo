@@ -1,5 +1,5 @@
 class User:
     def __init__(self, username, password, teacher):
-        self.username = username
-        self.__password = password
+        self.name = username
+        self.__pw = password
         self.teacher = teacher

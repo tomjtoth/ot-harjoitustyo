@@ -10,12 +10,12 @@ class Menu(View):
         """creates the main menu view"""
 
         super().__init__(master, drawing_view, login_view)
-        self._curr_user = backend.get_curr_user()
+        self._user = backend.get_curr_user()
         self._create_widgets()
 
     def _create_widgets(self):
         Label(self._frame,
-              text=f"You're logged in as {self._curr_user.username}"
+              text=f"You're logged in as {self._user.name}"
               ).grid(row=0, column=0, sticky=W, pady=2)
 
         Button(self._frame, text='Let\'s draw!',
@@ -23,5 +23,5 @@ class Menu(View):
         Button(self._frame, text='Logout', command=self._handle_prev).grid()
 
         # add extra controls/functionalities
-        if self._curr_user.teacher:
+        if self._user.teacher:
             pass
