@@ -52,6 +52,8 @@ class Login(View):
             return
 
         try:
+            self._handle_next()
+            return
             teacher = self.backend.login_register(
             username, password)
             messagebox.showinfo(
