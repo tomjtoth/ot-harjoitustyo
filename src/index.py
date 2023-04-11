@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 from tkinter import Tk
-from database.backend import Backend
+from backend.backend import backend
 from ui.ui import Ui
 
+
 def main():
-    backend = Backend()
     window = Tk()
     window.title('SVG artistic program')
 
-    ui_view = Ui(window)
+    ui = Ui(window)
+    ui.show_login()
 
     window.mainloop()
 

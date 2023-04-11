@@ -1,22 +1,32 @@
 import sqlite3
 import hashlib
 
+from entities.user import User
+
+
+class WrongPassword(Exception):
+    pass
+
+
 class Backend:
     """
-        path can be overridden for testing purposes, e.g. ":memory:"
+        takes care of literally EVERYTHING, will break it up later once everything works.....
     """
 
     def __init__(self, path: str = "backend.db"):
-        self.path = path
-        self.conn = sqlite3.connect(path)
-        self.conn.isolation_level = None
-        self.create_scheme()
+        "path can be overridden for testing purposes, e.g. ':memory:'"
 
-    def create_scheme(self):
+        self._path = path
+        self._conn = sqlite3.connect(path)
+        self._conn.isolation_level = None
+        self._curr_user = None
+        self._create_scheme()
+
+    def _create_scheme(self):
         """
             nothing special, simply creating the scheme
         """
-        self.conn.executescript("""
+        self._conn.executescript("""
         create table if not exists users(
             id integer primary key,
             username text not null,
@@ -69,7 +79,7 @@ class Backend:
 
         # storing pw as md5sum BAD IDEA!!!!
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
-        db_res = self.conn.execute("""
+        db_res = self._conn.execute("""
         select password, iif(t.user_id, 1, 0) as role
         from users u
         left join teachers t on t.user_id == u.id
@@ -82,23 +92,29 @@ class Backend:
 
             if password != db_res[0]:
                 # wrong password
-                return False, teacher
+                raise WrongPassword
 
         # user does not exist, registering here
         else:
-            cur = self.conn.cursor()
+            cur = self._conn.cursor()
             cur.execute("insert into users(username, password) values (?, ?)", [
                         username, password])
 
             if teacher:
-                self.conn.execute(
+                self._conn.execute(
                     "insert into teachers values(?)", [cur.lastrowid])
 
         # either login or register succeeded
-        return True, teacher
+        self._curr_user = User(username, password, teacher)
+
+    def get_curr_user(self):
+        return self._curr_user
 
     def create_drawing(self):
         pass
 
     def save_drawing(self):
         pass
+
+
+backend = Backend()

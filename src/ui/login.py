@@ -2,7 +2,8 @@ import re
 from textwrap import dedent
 from tkinter import messagebox, Tk, Entry, Button, Label, W
 from ui.common import View
-from services.login_manager import LoginManager
+from backend.backend import backend
+
 
 class Login(View):
     """Makes logging in possible via GUI"""
@@ -26,8 +27,9 @@ class Login(View):
         self._pass.grid(row=1, column=1, pady=2)
 
         Button(self._frame, text='Login/register',
-                  command=self._process_input).grid(columnspan=2)
-        Button(self._frame, text='Quit', command=self._handle_prev).grid(columnspan=2)
+               command=self._process_input).grid(columnspan=2)
+        Button(self._frame, text='Quit',
+               command=self._handle_prev).grid(columnspan=2)
 
     def _process_input(self):
         username = self._user.get()
@@ -38,7 +40,8 @@ class Login(View):
                 "invalid username", dedent("""
                 usernames should:
                 - be more than 3 chars
-                - contain only chars from a-zA-Z0-9_
+                - contain only chars from [a-zA-Z0-9_]
+                - may not begin with a digit [0-9]
                 """))
             return
 
@@ -52,12 +55,8 @@ class Login(View):
             return
 
         try:
+            backend.login_register(username, password)
             self._handle_next()
-            return
-            teacher = self.backend.login_register(
-            username, password)
-            messagebox.showinfo(
-                "Succeess", f"you're in!{' ... as a teacher' if teacher else ''}")
 
         except:
             messagebox.showerror("Login/register failed", "wrong password")
