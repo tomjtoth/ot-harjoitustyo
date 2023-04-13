@@ -14,18 +14,19 @@ class MenuView(View):
         self._create_widgets()
 
     def _create_widgets(self):
-        Label(self._frame, text=f"Login: {self._user.name}").grid(row=0, column=0, sticky=W, pady=2)
-
+        
+        Button(self._frame, text=f"Logout ({self._user.name})", command=self._handle_prev).grid()
         
         self._dwgs = [] #backend.get_user_dwgs()
 
         self.lb_dwg = Listbox(self._frame)
         self.lb_dwg.insert(0, '<NEW DRAWING>')
         self.lb_dwg.grid()
+
         
         Button(self._frame, text='Let\'s draw!',
                command=self._proceed_to_next_view).grid()
-        Button(self._frame, text='Logout', command=self._handle_prev).grid()
+        
 
         # add extra controls/functionalities
         if self._user.teacher:

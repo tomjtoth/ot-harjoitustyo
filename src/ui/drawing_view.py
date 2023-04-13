@@ -15,11 +15,10 @@ class DrawingView(View):
         self._create_widgets()
 
     def _create_widgets(self):
-        Label(self._frame,
-                text=f"Login: {self._curr_user.name}"
-            ).grid(row=0, column=0, columnspan=2)
-
-        Button(self._frame, text='Menu', command=self._handle_prev).grid(columnspan=2)
+        
+        Button(self._frame, text=f"Logout ({self._curr_user.name})", command=self._handle_prev).grid(columnspan=2)
+        
+        # main features
         Button(self._frame, text='▯ rect').grid(column=0, row=2)
         Button(self._frame, text='O circ').grid(column=1, row=2)
         Button(self._frame, text='W poly').grid(column=0, row=3)
