@@ -11,4 +11,5 @@
 - migrated to class based Backend
 - login/register is now connected to Backend
 - user:pass validation added
-- mimicking todo-app class dynamics + fragmentation
+- mimicking todo-app class dynamics + fragmentation of source files
+- drawing dynamics mapped, forget about SVG, using tkinter.Canvas

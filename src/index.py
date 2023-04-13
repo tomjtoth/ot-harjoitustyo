@@ -4,13 +4,13 @@ from tkinter import Tk
 from ui.ui import Ui
 
 def main():
-    window = Tk()
-    window.title('SVG artistic program')
+    tk_window = Tk()
+    tk_window.title('SVG artistic program')
 
-    ui = Ui(window)
-    ui.show_login()
+    ui_window = Ui(tk_window)
+    ui_window.show_login()
 
-    window.mainloop()
+    tk_window.mainloop()
 
 
 if __name__ == '__main__':

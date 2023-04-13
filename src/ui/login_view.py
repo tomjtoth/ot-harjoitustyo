@@ -1,15 +1,16 @@
 import re
 from textwrap import dedent
-from tkinter import messagebox, Tk, Entry, Button, Label, W
+from tkinter import messagebox, Entry, Button, Label, W
 from ui.common import View
-from backend.backend import backend
+from backend.backend import backend, WrongPassword
 
 
-class Login(View):
+class LoginView(View):
     """Makes logging in possible via GUI"""
 
     def __init__(self, master, menu_view):
         """creates the view"""
+
         super().__init__(master, menu_view, master.quit)
         self._create_widgets()
         self._re_user = re.compile(r"^[a-zA-Z_]\w{2,}$")
@@ -40,7 +41,7 @@ class Login(View):
                 "invalid username", dedent("""
                 usernames should:
                 - be more than 3 chars
-                - contain only chars from [a-zA-Z0-9_]
+                - contain only chars from class [a-zA-Z0-9_]
                 - not begin with a digit [0-9]
                 """))
             return
@@ -50,7 +51,7 @@ class Login(View):
                 "invalid password", dedent("""
                 passwords should:
                 - be between 8 and 16 chars
-                - contain only chars from a-zA-Z0-9_
+                - contain only chars from class [a-zA-Z0-9_]
                 """))
             return
 
@@ -58,5 +59,5 @@ class Login(View):
             backend.login_register(username, password)
             self._handle_next()
 
-        except:
+        except WrongPassword:
             messagebox.showerror("Login/register failed", "wrong password")

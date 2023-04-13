@@ -1,6 +1,6 @@
-from ui.login import Login
-from ui.drawing import Drawing
-from ui.menu import Menu
+from ui.login_view import LoginView
+from ui.drawing_view import DrawingView
+from ui.menu_view import MenuView
 
 
 class Ui:
@@ -9,14 +9,14 @@ class Ui:
         self._curr_view = None
 
     def show_login(self):
-        self._change_view(Login(self._master, self.show_menu))
+        self._change_view(LoginView(self._master, self.show_menu))
 
     def show_menu(self):
         self._change_view(
-            Menu(self._master, self.show_drawing, self.show_login))
+            MenuView(self._master, self.show_drawing, self.show_login))
 
-    def show_drawing(self):
-        self._change_view(Drawing(self._master, self.show_menu))
+    def show_drawing(self, dwg):
+        self._change_view(DrawingView(self._master, self.show_menu, dwg))
 
     def _change_view(self, next_view):
         if self._curr_view:

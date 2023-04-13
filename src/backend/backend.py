@@ -20,9 +20,9 @@ class Backend:
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
         self._curr_user = None
-        self._create_scheme()
+        self.create_scheme()
 
-    def _create_scheme(self):
+    def create_scheme(self):
         """
             nothing special, simply creating the scheme
         """
@@ -38,17 +38,10 @@ class Backend:
         create table if not exists teachers(
             user_id integer primary key references users(id)
         );
-        
-        --create at least 1 teacher
-        -- toistuisi turhaan joka kertaa..
-        -- WiP
-        /*
-        insert into users(username, password) values ('root', 'toor');
-        insert into teachers values(1);
-        */
 
         create table if not exists drawings(
             id integer primary key,
+            owner_id integer references users(id),
             name text not null,
             svg_data text not null --or blob, idk yet, no idea what SVG libs are available in python...
         );
@@ -56,14 +49,6 @@ class Backend:
         create table if not exists templates(
             drawing_id integer primary key references drawings(id)
         );
-        create table if not exists ownership (
-            drawing_id integer references drawings(id),
-            user_id integer references users(id),
-
-            --1 drawing can only belong to 1 user
-            primary key (drawing_id, user_id)
-        );
-
         """)
 
     # just 1 button, no time for 2 different methodzzZZzz
@@ -76,7 +61,7 @@ class Backend:
         # storing pw as md5sum BAD IDEA!!!!
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
         db_res = self._conn.execute("""
-        select password, iif(t.user_id, 1, 0) as role
+        select u.id, password, iif(t.user_id, 1, 0) as role
         from users u
         left join teachers t on t.user_id == u.id
         where username=?""", [username]).fetchone()
@@ -84,11 +69,11 @@ class Backend:
         # user exists
         if db_res:
 
-            teacher = bool(db_res[1])
-
-            if password != db_res[0]:
-                # wrong password
+            if password != db_res[1]:
                 raise WrongPassword
+            
+            id = db_res[0]
+            teacher = bool(db_res[2])
 
         # user does not exist, registering here
         else:
@@ -96,15 +81,28 @@ class Backend:
             cur.execute("insert into users(username, password) values (?, ?)", [
                         username, password])
 
+            id = cur.lastrowid
+
             if teacher:
-                self._conn.execute(
-                    "insert into teachers values(?)", [cur.lastrowid])
+                self._conn.execute("insert into teachers values(?)", [id])
 
         # either login or register succeeded
-        self._curr_user = User(username, password, teacher)
+        self._curr_user = User(id, username, teacher)
 
     def get_curr_user(self):
         return self._curr_user
+
+    def get_user_dwgs(self):
+        arr = []
+        for x in self._conn.execute("""
+        select name, iif(t.owner_id, 1, 0) as template
+        from drawings d
+        left join templates t on t.drawing_id == d.id
+        left join 
+        where username=?
+        """).fetchall():
+            pass
+        return arr
 
     def create_drawing(self):
         pass

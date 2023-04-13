@@ -8,4 +8,6 @@
 | 6.4   | 4  | user:pass validaatiot, todo-app:in tkinter tutkinta |
 | 7.4   | 1  | pylint + jupyter tests in VS Code |
 | 10.4   | 2  | GUI |
-| 11.4   | 2  | login made working based on todo-app |
+| 11.4   | 4  | login made working based on todo-app |
+| 12.4   | 4  | dropping SVG, using tkinter.Canvas |
+| 13.4   | 4  | studying tkinter.Canvas |

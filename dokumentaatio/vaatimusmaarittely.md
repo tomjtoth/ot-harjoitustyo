@@ -24,7 +24,7 @@ Sovelluksessa tulee olemaan alla näkymät:
   - [X] tunnuksen on oltava ainakin 3 merkkiä ja ainutlaatuinen
 - [X] Käyttäjä voi kirjautua järjestelmään
   - [X] Kirjautuminen onnistuu syötettäessä olemassaoleva käyttäjätunnus ja salasana kirjautumislomakkeelle
-  - [X] Jos käyttäjää ei olemassa, tai salasana ei täsmää, ilmoittaa järjestelmä tästä
+  - [X] Jos salasana ei täsmää, ilmoittaa järjestelmä tästä
 
 ### Kirjautumisen jälkeen
 
@@ -49,3 +49,4 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] template:in toteutus
 - [ ] mahdollisesti *opettajarooli*
 - [X] salasanojen monimutkaisuus \w{8,16}
+- [ ] piirroksia saa tallentaa .svg tiedostona
