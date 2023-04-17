@@ -6,7 +6,8 @@ class View:
 
     def __init__(self, master, next_view, prev_view):
         """Assigns the drawable frame"""
-
+        
+        self._master = master
         self._frame = Frame(master)
         self._handle_next = next_view
         self._handle_prev = prev_view

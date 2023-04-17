@@ -50,3 +50,4 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] mahdollisesti *opettajarooli*
 - [X] salasanojen monimutkaisuus \w{8,16}
 - [ ] piirroksia saa tallentaa .svg tiedostona
+- 

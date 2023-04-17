@@ -17,15 +17,19 @@ class LoginView(View):
         self._re_pass = re.compile(r"^\w{8,16}$")
 
     def _create_widgets(self):
+        "populates the widgets in the view"
+
         Label(self._frame, text='username:').grid(
             row=0, column=0, sticky=W, pady=2)
         self._user = Entry(self._frame)
         self._user.grid(row=0, column=1, pady=2)
+        self._user.focus_set()
 
         Label(self._frame, text='password:').grid(
             row=1, column=0, sticky=W, pady=2)
         self._pass = Entry(self._frame, show="*")
         self._pass.grid(row=1, column=1, pady=2)
+        self._pass.bind('<Return>', lambda _event : self._process_input())
 
         Button(self._frame, text='Login/register',
                command=self._process_input).grid(columnspan=2)
@@ -33,6 +37,8 @@ class LoginView(View):
                command=self._handle_prev).grid(columnspan=2)
 
     def _process_input(self):
+        "tries logging in by getting the content of entries"
+
         username = self._user.get()
         password = self._pass.get()
 

@@ -1,8 +1,14 @@
 import sqlite3
 import hashlib
-
+import json
+from collections import deque
 from entities.user import User
+from entities.drawing import Drawing
 
+RECTANGLE = 0
+OVAL = 1
+LINE = 2
+TEXT = 3
 
 class WrongPassword(Exception):
     pass
@@ -10,7 +16,8 @@ class WrongPassword(Exception):
 
 class Backend:
     """
-        takes care of literally EVERYTHING, will break it up later once everything works.....
+        takes care of literally EVERYTHING,
+        will break it up later once everything works.....
     """
 
     def __init__(self, path: str = "backend.db"):
@@ -20,12 +27,12 @@ class Backend:
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
         self._curr_user = None
+        self._curr_dwg = None
         self.create_scheme()
 
     def create_scheme(self):
-        """
-            nothing special, simply creating the scheme
-        """
+        "creating scheme on 1st run, no-op later.."
+        
         self._conn.executescript("""
         create table if not exists users(
             id integer primary key,
@@ -43,7 +50,11 @@ class Backend:
             id integer primary key,
             owner_id integer references users(id),
             name text not null,
-            svg_data text not null --or blob, idk yet, no idea what SVG libs are available in python...
+            width integer not null,
+            height integer not null,
+            
+            -- JSON
+            content text not null
         );
 
         create table if not exists templates(
@@ -90,25 +101,130 @@ class Backend:
         self._curr_user = User(id, username, teacher)
 
     def get_curr_user(self):
+        "retreives the currently logged in user"
+
         return self._curr_user
 
     def get_user_dwgs(self):
-        arr = []
-        for x in self._conn.execute("""
-        select name, iif(t.owner_id, 1, 0) as template
-        from drawings d
-        left join templates t on t.drawing_id == d.id
-        left join 
-        where username=?
-        """).fetchall():
-            pass
-        return arr
+        return [ 
+            Drawing(name, width, height, id, json.loads(content)) 
+            for name, width, height, id, content
+            in self._conn.execute("""
+            select name, width, height, id, content
+            from drawings d
+            where owner_id=?
+            """, (self._curr_user.id, )).fetchall() 
+        ]
 
-    def create_drawing(self):
+    def save_curr_dwg(self):
+
+        # existing drawing
+        if self._curr_dwg.id:
+            self._conn.execute("""
+            update drawings set content = ?
+            where id = ?
+            """, (self._curr_dwg.stringify(), self._curr_dwg.id))
+
+        # new drawing
+        else:
+            self._conn.execute("""
+            insert into drawings(
+                owner_id,
+                name,
+                width,
+                height,
+                content
+            ) values (?,?,?,?,?)
+            """, (
+                self._curr_user.id,
+                self._curr_dwg.name,
+                self._curr_dwg.width,
+                self._curr_dwg.height,
+                self._curr_dwg.stringify()
+            ))
+
+    def get_curr_dwg(self):
+        "gets the current drawing"
+        return self._curr_dwg
+
+    def set_curr_dwg(self, dwg):
+        "assigns the current drawing to backend"
+
+        self._curr_dwg = dwg
+
+    def set_canvas(self, canvas):
+        "assigns the current canvas to backend"
+        
+        self._canvas = canvas
+        self._coords = deque()
+        self._clicks = 0
+        for (feature, coords, kwargs) in self._curr_dwg.reproduce():
+            self._draw(feature, *coords, logging=False, **kwargs)
+        
+
+    def set_cmd(self, cmd):
+        "sets the currently initiated command"
+
+        self._curr_cmd = cmd
+
+    def set_fill(self, color):
+        self._curr_fill = color
+
+    def set_border(self, color):
+        self._curr_border = color
+
+    def _draw(self, cmd, *args, logging=True, **kwargs):
+        "creates features on the current canvas + stores recipie in drawing's log"
+
+        if cmd == RECTANGLE:
+            self._canvas.create_rectangle(*args, **kwargs)
+            
+        elif cmd == OVAL:
+            self._canvas.create_oval(*args, **kwargs)
+
+        elif cmd == LINE:
+            self._canvas.create_line(*args, **kwargs)
+
+        elif cmd == TEXT:
+            self._canvas.create_text(*args, **kwargs)
+
+        if logging:
+            self._curr_dwg.add(cmd, *args, **kwargs)
+    
+    # placeholder atm
+    def b1_dn(self, event):
+        "left button pressed"
         pass
 
-    def save_drawing(self):
-        pass
+    def b1_up(self, event):
+        "left button released"
 
+        self._coords.append(event.x)
+        self._coords.append(event.y)
+
+        # keeping track of 2 (x,y) coords
+        while len(self._coords) > 4:
+            self._coords.popleft()
+
+        if self._curr_cmd == TEXT:
+            self._draw(self._curr_cmd, self._coords[2], self._coords[3], text='jotain')
+        else:
+            self._clicks += 1
+
+            if self._clicks % 2 == 0:
+                if self._curr_cmd == LINE:
+                    self._draw(self._curr_cmd, 
+                        *self._coords, 
+                        fill=self._curr_fill, width=10)
+                else:
+                    self._draw(self._curr_cmd, 
+                        *self._coords, 
+                        outline=self._curr_border, fill=self._curr_fill, width=10)
+            
+    # jatkokehari?
+    def b1_mv(self, ev):
+        "dragged while left button pressed"
+
+        pass
 
 backend = Backend()

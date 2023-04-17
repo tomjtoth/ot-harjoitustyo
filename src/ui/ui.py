@@ -15,8 +15,8 @@ class Ui:
         self._change_view(
             MenuView(self._master, self.show_drawing, self.show_login))
 
-    def show_drawing(self, dwg):
-        self._change_view(DrawingView(self._master, self.show_menu, dwg))
+    def show_drawing(self):
+        self._change_view(DrawingView(self._master, self.show_menu))
 
     def _change_view(self, next_view):
         if self._curr_view:

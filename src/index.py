@@ -5,7 +5,8 @@ from ui.ui import Ui
 
 def main():
     tk_window = Tk()
-    tk_window.title('Art+')
+    tk_window.title('Art +')
+    tk_window.resizable(False, False)
 
     tk_window.iconphoto(True, PhotoImage(file='src/ui/van_gogh_icon.png'))
 

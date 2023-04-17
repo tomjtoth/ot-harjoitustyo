@@ -1,4 +1,4 @@
-from tkinter import messagebox, Listbox, Button, Label, W
+from tkinter import messagebox, Listbox, Button, Label, W, Toplevel, Entry, Label, StringVar, IntVar
 from ui.common import View
 from backend.backend import backend
 from entities.drawing import Drawing
@@ -16,17 +16,20 @@ class MenuView(View):
     def _create_widgets(self):
         
         Button(self._frame, text=f"Logout ({self._user.name})", command=self._handle_prev).grid()
-        
-        self._dwgs = [] #backend.get_user_dwgs()
+
+        self._dwgs = backend.get_user_dwgs()
 
         self.lb_dwg = Listbox(self._frame)
-        self.lb_dwg.insert(0, '<NEW DRAWING>')
+        self.lb_dwg.bind('<Return>', lambda _event : self._proceed_to_next_view())
         self.lb_dwg.grid()
+        self.lb_dwg.insert(0, '<NEW DRAWING>')
 
-        
+        for i, dwg in enumerate(self._dwgs):
+            self.lb_dwg.insert(i+1, dwg.name)
+
         Button(self._frame, text='Let\'s draw!',
                command=self._proceed_to_next_view).grid()
-        
+
 
         # add extra controls/functionalities
         if self._user.teacher:
@@ -34,7 +37,34 @@ class MenuView(View):
 
     def _proceed_to_next_view(self):
         dwg_i = self.lb_dwg.curselection()[0]
+        
+        # should be separated to own module at some point..
         if dwg_i == 0:
-            dwg = Drawing('hardcoded new name')
+            pop_up = Toplevel(self._frame)
+            pop_up.title('New DWG')
 
-        self._handle_next(dwg)
+            name = StringVar(pop_up, value='jotain uusi')
+            Label(pop_up, text='name:').grid(column=0, row=0)
+            Entry(pop_up, textvariable=name).grid(column=1, row=0)
+            
+            width = IntVar(pop_up, value=800)
+            Label(pop_up, text='width:').grid(column=0, row=1)
+            Entry(pop_up, textvariable=width).grid(column=1, row=1)
+            
+            height = IntVar(pop_up, value=600)
+            Label(pop_up, text='height:').grid(column=0, row=2)
+            Entry(pop_up, textvariable=height).grid(column=1, row=2)
+
+            Button(pop_up, text='Create', command=lambda : self._new_dwg(name, width, height, pop_up.destroy)
+                ).grid(columnspan=2, row=3)
+
+            pop_up.wait_window()
+            
+        else:
+            backend.set_curr_dwg(self._dwgs[dwg_i-1])
+        
+        self._handle_next()
+
+    def _new_dwg(self, name, width, height, killswitch):
+        backend.set_curr_dwg(Drawing(name.get(), width.get(), height.get()))
+        killswitch()
