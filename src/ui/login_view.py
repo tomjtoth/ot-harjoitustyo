@@ -6,10 +6,10 @@ from backend.backend import backend, WrongPassword
 
 
 class LoginView(View):
-    """Makes logging in possible via GUI"""
+    "Makes logging in possible via GUI"
 
     def __init__(self, master, menu_view):
-        """creates the view"""
+        "creates the view"
 
         super().__init__(master, menu_view, master.quit)
         self._create_widgets()
@@ -29,7 +29,7 @@ class LoginView(View):
             row=1, column=0, sticky=W, pady=2)
         self._pass = Entry(self._frame, show="*")
         self._pass.grid(row=1, column=1, pady=2)
-        self._pass.bind('<Return>', lambda _event : self._process_input())
+        self._pass.bind('<Return>', lambda _event: self._process_input())
 
         Button(self._frame, text='Login/register',
                command=self._process_input).grid(columnspan=2)

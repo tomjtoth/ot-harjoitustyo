@@ -6,7 +6,7 @@ from entities.user import User
 class TestUserManagement(unittest.TestCase):
     def setUp(self):
         self.backend = Backend(":memory:")
-        
+
     def test_login_register(self):
         # register teacher
         self.backend.login_register("teacher", "teacher", True)
@@ -17,8 +17,8 @@ class TestUserManagement(unittest.TestCase):
         self.backend.login_register("teacher", "teacher")
 
         # login raises WronPassword for teacher
-        self.assertRaises(WrongPassword, self.backend.login_register, "teacher", "wrong_pw")
-
+        self.assertRaises(
+            WrongPassword, self.backend.login_register, "teacher", "wrong_pw")
 
         # register student
         self.backend.login_register("student", "student")
@@ -29,4 +29,8 @@ class TestUserManagement(unittest.TestCase):
         self.backend.login_register("student", "student")
 
         # login raises WronPassword for student
-        self.assertRaises(WrongPassword, self.backend.login_register, "student", "wrong_pw")
+        self.assertRaises(
+            WrongPassword, self.backend.login_register, "student", "wrong_pw")
+
+    def test_drawing(self):
+        self.backend.login_register("user", "user")

@@ -14,4 +14,4 @@
 | 14.4   | 3  | entities.drawing, ui.drawing_view |
 | 15.4   | 4  | backend: drawing to canvas |
 | 16.4   | 3  | backend: saving/loading drawings via JSON to/from sqlite |
-| 17.4   | 3  | backend save/load debugged, title changes, tests from scratch |
+| 17.4   | 3  | backend save/load debugged, title changes, tests, pylint |

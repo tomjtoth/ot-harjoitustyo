@@ -10,6 +10,7 @@ OVAL = 1
 LINE = 2
 TEXT = 3
 
+
 class WrongPassword(Exception):
     pass
 
@@ -20,19 +21,28 @@ class Backend:
         will break it up later once everything works.....
     """
 
+    # pylint: disable=too-many-instance-attributes
+    # I need all of them!
+
     def __init__(self, path: str = "backend.db"):
         "path can be overridden for testing purposes, e.g. ':memory:'"
 
-        self._path = path
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
         self._curr_user = None
         self._curr_dwg = None
         self._create_scheme()
 
+        self._clicks = 0
+        self._curr_cmd = RECTANGLE
+        self._curr_fill = 'red'
+        self._curr_border = 'green'
+        self._coords = deque()
+        self._canvas = None
+
     def _create_scheme(self):
         "creating scheme on 1st run, no-op later.."
-        
+
         self._conn.executescript("""
         create table if not exists users(
             id integer primary key,
@@ -82,8 +92,8 @@ class Backend:
 
             if password != db_res[1]:
                 raise WrongPassword
-            
-            id = db_res[0]
+
+            user_id = db_res[0]
             teacher = bool(db_res[2])
 
         # user does not exist, registering here
@@ -92,13 +102,13 @@ class Backend:
             cur.execute("insert into users(username, password) values (?, ?)", [
                         username, password])
 
-            id = cur.lastrowid
+            row_id = cur.lastrowid
 
             if teacher:
-                self._conn.execute("insert into teachers values(?)", [id])
+                self._conn.execute("insert into teachers values(?)", [row_id])
 
         # either login or register succeeded
-        self._curr_user = User(id, username, teacher)
+        self._curr_user = User(user_id, username, teacher)
 
     def get_curr_user(self):
         "retreives the currently logged in user"
@@ -106,14 +116,14 @@ class Backend:
         return self._curr_user
 
     def get_user_dwgs(self):
-        return [ 
-            Drawing(name, width, height, id, json.loads(content)) 
+        return [
+            Drawing(name, width, height, id, json.loads(content))
             for name, width, height, id, content
             in self._conn.execute("""
             select name, width, height, id, content
             from drawings d
             where owner_id=?
-            """, (self._curr_user.id, )).fetchall() 
+            """, (self._curr_user.id, )).fetchall()
         ]
 
     def save_curr_dwg(self):
@@ -154,13 +164,11 @@ class Backend:
 
     def set_canvas(self, canvas):
         "assigns the current canvas to backend"
-        
+
         self._canvas = canvas
-        self._coords = deque()
-        self._clicks = 0
+
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
             self._draw(feature, *coords, logging=False, **kwargs)
-        
 
     def set_cmd(self, cmd):
         "sets the currently initiated command"
@@ -168,9 +176,13 @@ class Backend:
         self._curr_cmd = cmd
 
     def set_fill(self, color):
+        "sets the fill color"
+
         self._curr_fill = color
 
     def set_border(self, color):
+        "sets the border color"
+
         self._curr_border = color
 
     def _draw(self, cmd, *args, logging=True, **kwargs):
@@ -178,7 +190,7 @@ class Backend:
 
         if cmd == RECTANGLE:
             self._canvas.create_rectangle(*args, **kwargs)
-            
+
         elif cmd == OVAL:
             self._canvas.create_oval(*args, **kwargs)
 
@@ -190,11 +202,10 @@ class Backend:
 
         if logging:
             self._curr_dwg.add(cmd, *args, **kwargs)
-    
+
     # placeholder atm
     def b1_dn(self, event):
         "left button pressed"
-        pass
 
     def b1_up(self, event):
         "left button released"
@@ -207,24 +218,24 @@ class Backend:
             self._coords.popleft()
 
         if self._curr_cmd == TEXT:
-            self._draw(self._curr_cmd, self._coords[2], self._coords[3], text='jotain')
+            self._draw(self._curr_cmd,
+                       self._coords[2], self._coords[3], text='jotain')
         else:
             self._clicks += 1
 
             if self._clicks % 2 == 0:
                 if self._curr_cmd == LINE:
-                    self._draw(self._curr_cmd, 
-                        *self._coords, 
-                        fill=self._curr_fill, width=10)
+                    self._draw(self._curr_cmd,
+                               *self._coords,
+                               fill=self._curr_fill, width=10)
                 else:
-                    self._draw(self._curr_cmd, 
-                        *self._coords, 
-                        outline=self._curr_border, fill=self._curr_fill, width=10)
-            
+                    self._draw(self._curr_cmd,
+                               *self._coords,
+                               outline=self._curr_border, fill=self._curr_fill, width=10)
+
     # jatkokehari?
-    def b1_mv(self, ev):
+    def b1_mv(self, event):
         "dragged while left button pressed"
 
-        pass
 
 backend = Backend()

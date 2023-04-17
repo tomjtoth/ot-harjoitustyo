@@ -28,16 +28,16 @@ Sovelluksessa tulee olemaan alla näkymät:
 
 ### Kirjautumisen jälkeen
 
-- [ ] Käyttäjä saa ladata omat piirokset ja jatkaa ne
-- [ ] Käyttäjä voi luoda uuden piirroksen
-  - [ ] opiskelijoiden luomat piirrokset näkyvät ainoastaan sen luoneelle käyttäjälle + opettajille
-- [ ] Käyttäjä saa lisätä yleisiä SVG elementtejä piirrokselleen
+- [X] Käyttäjä saa ladata omat piirokset ja jatkaa ne
+- [X] Käyttäjä voi luoda uuden piirroksen
+  - [X] opiskelijoiden luomat piirrokset näkyvät ainoastaan sen luoneelle käyttäjälle + opettajille
+- [X] Käyttäjä saa lisätä yleisiä elementtejä piirrokselleen
   - [ ] elementtien järjestys on vaihdettavissa
   - [ ] elementtien (rajoitetun määrän) ominaisuudet ovat saadettavissa
-- [ ] Käyttäjä saa tallentaa piirroksensa ja nimettää sitä
+- [X] Käyttäjä saa tallentaa piirroksensa ja nimettää sitä
 - [ ] Käyttäjä saa ladata omat piirrokset ja **template** -it
   - [ ] _Opettaja_ rooliset käyttäjät saa myös avata muiden luomat piirrokset
-- [ ] Käyttäjä saa kirjautua ulos
+- [X] Käyttäjä saa kirjautua ulos
 
 ## Jatkokehitysideoita
 
@@ -49,5 +49,5 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] template:in toteutus
 - [ ] mahdollisesti *opettajarooli*
 - [X] salasanojen monimutkaisuus \w{8,16}
-- [ ] piirroksia saa tallentaa .svg tiedostona
+- [ ] piirroksia saa tallentaa tiedostona
 - 
