@@ -28,9 +28,9 @@ class Backend:
         self._conn.isolation_level = None
         self._curr_user = None
         self._curr_dwg = None
-        self.create_scheme()
+        self._create_scheme()
 
-    def create_scheme(self):
+    def _create_scheme(self):
         "creating scheme on 1st run, no-op later.."
         
         self._conn.executescript("""
