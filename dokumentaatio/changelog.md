@@ -16,5 +16,5 @@
 - rectangle, oval, line, text (with dummy placeholder) drawing works
 - able to store dwg in JSON (saving rigged on exit)
 - able to load earlier drawing
-- tests at 34%
-- 
+- alpha about ready
+- classDiagram

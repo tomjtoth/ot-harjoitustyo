@@ -20,7 +20,7 @@ hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittami
 
 ## Muut komentorivitoiminnot
 
-Naihin varmaan tarviit 
+Näihin varmaan tarviit loputkin riippuvuuksista, joten aja `poetry install` uudelleen ilman se lisälippu.
 
 - testaaminen `poetry run invoke test` komennolla
 - kattavuuden tuonti `poetry run invoke coverage-report` komennolla
