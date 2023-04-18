@@ -15,4 +15,5 @@
 | 15.4   | 4  | backend: drawing to canvas |
 | 16.4   | 3  | backend: saving/loading drawings via JSON to/from sqlite |
 | 17.4   | 3  | backend save/load debugged, title changes, tests, pylint |
-| 18.4   | 2  | docs, classDiagram |
+| 18.4   | 2  | docs, classDiagram | %42
+| | 42 | total|
