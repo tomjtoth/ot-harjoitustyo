@@ -8,7 +8,7 @@ class Drawing:
     """
 
     def __init__(self, name: str, width=800, height=600, dwg_id: int = None, content: list = None):
-        "creates a Drawing"
+        """creates a Drawing"""
 
         self.name = name
         self.id = dwg_id
@@ -17,17 +17,17 @@ class Drawing:
         self._content = content if content else []
 
     def add(self, cmd, *args, **kwargs):
-        "buffers used commands in a reproducible way"
+        """buffers used commands in a reproducible way"""
 
         self._content.append([cmd, args, kwargs])
 
     def reproduce(self):
-        "this could probably be a simple getter..."
+        """this could probably be a simple getter..."""
 
         for feature in self._content:
             yield feature
 
     def stringify(self):
-        "stringifies the content of the drawing, used for saving to backend"
+        """stringifies the content of the drawing, used for saving to backend"""
 
         return json.dumps(self._content)

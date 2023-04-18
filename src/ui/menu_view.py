@@ -5,17 +5,17 @@ from entities.drawing import Drawing
 
 
 class MenuView(View):
-    "shows a list of drawings available to the user"
+    """shows a list of drawings available to the user"""
 
     def __init__(self, master, drawing_view, login_view):
-        "creates the main menu view"
+        """creates the main menu view"""
 
         super().__init__(master, drawing_view, login_view)
         self._user = backend.get_curr_user()
         self._create_widgets()
 
     def _create_widgets(self):
-        "internal func, creates all the GUI controls"
+        """internal func, creates all the GUI controls"""
 
         Button(
             self._frame, text=f"Logout ({self._user.name})", command=self._handle_prev).grid()
@@ -43,7 +43,7 @@ class MenuView(View):
             pass
 
     def _proceed_to_next_view(self):
-        "sets up a new or old drawing and proceeds to drawing view"
+        """sets up a new or old drawing and proceeds to drawing view"""
 
         dwg_i = self._lb_dwg.curselection()[0]
 
@@ -75,7 +75,7 @@ class MenuView(View):
         self._handle_next()
 
     def _new_dwg(self, name, width, height, killswitch):
-        "helper method for setting up a new drawing"
+        """helper method for setting up a new drawing"""
 
         backend.set_curr_dwg(Drawing(name.get(), width.get(), height.get()))
         killswitch()

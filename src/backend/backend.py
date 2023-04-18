@@ -25,7 +25,7 @@ class Backend:
     # I need all of them!
 
     def __init__(self, path: str = "backend.db"):
-        "path can be overridden for testing purposes, e.g. ':memory:'"
+        """path can be overridden for testing purposes, e.g. ':memory:'"""
 
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
@@ -41,7 +41,7 @@ class Backend:
         self._canvas = None
 
     def _create_scheme(self):
-        "creating scheme on 1st run, no-op later.."
+        """creating scheme on 1st run, no-op later.."""
 
         self._conn.executescript("""
         create table if not exists users(
@@ -113,7 +113,7 @@ class Backend:
         self._curr_user = User(user_id, username, teacher)
 
     def get_curr_user(self):
-        "retreives the currently logged in user"
+        """retreives the currently logged in user"""
 
         return self._curr_user
 
@@ -156,16 +156,16 @@ class Backend:
             ))
 
     def get_curr_dwg(self):
-        "gets the current drawing"
+        """gets the current drawing"""
         return self._curr_dwg
 
     def set_curr_dwg(self, dwg):
-        "assigns the current drawing to backend"
+        """assigns the current drawing to backend"""
 
         self._curr_dwg = dwg
 
     def set_canvas(self, canvas):
-        "assigns the current canvas to backend"
+        """assigns the current canvas to backend"""
 
         self._canvas = canvas
 
@@ -173,22 +173,22 @@ class Backend:
             self._draw(feature, *coords, logging=False, **kwargs)
 
     def set_cmd(self, cmd):
-        "sets the currently initiated command"
+        """sets the currently initiated command"""
 
         self._curr_cmd = cmd
 
     def set_fill(self, color):
-        "sets the fill color"
+        """sets the fill color"""
 
         self._curr_fill = color
 
     def set_border(self, color):
-        "sets the border color"
+        """sets the border color"""
 
         self._curr_border = color
 
     def _draw(self, cmd, *args, logging=True, **kwargs):
-        "creates features on the current canvas + stores recipie in drawing's log"
+        """creates features on the current canvas + stores recipie in drawing's log"""
 
         if cmd == RECTANGLE:
             self._canvas.create_rectangle(*args, **kwargs)
@@ -207,10 +207,10 @@ class Backend:
 
     # placeholder atm
     def b1_dn(self, event):
-        "left button pressed"
+        """left button pressed"""
 
     def b1_up(self, event):
-        "left button released"
+        """left button released"""
 
         self._coords.append(event.x)
         self._coords.append(event.y)
@@ -237,7 +237,7 @@ class Backend:
 
     # jatkokehari?
     def b1_mv(self, event):
-        "dragged while left button pressed"
+        """dragged while left button pressed"""
 
 
 # exporting this one here

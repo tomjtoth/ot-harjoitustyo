@@ -4,10 +4,10 @@ from backend.backend import backend, RECTANGLE, OVAL, LINE, TEXT
 
 
 class DrawingView(View):
-    "the main drawing view"
+    """the main drawing view"""
 
     def __init__(self, master, menu_view):
-        "creates the main drawing view"
+        """creates the main drawing view"""
 
         super().__init__(master, None, menu_view)
         self._curr_user = backend.get_curr_user()
@@ -16,7 +16,7 @@ class DrawingView(View):
         self._create_widgets()
 
     def _add_clr_btn(self, color: str):
-        "adds a button for border and a button for fill"
+        """adds a button for border and a button for fill"""
 
         Button(self._frame, bg=color,
                command=lambda: backend.set_border(color),
@@ -32,14 +32,14 @@ class DrawingView(View):
 
     # jatkokehari
     def _undo(self):
-        "pushes the last feature from the drawing to the undo stack"
+        """pushes the last feature from the drawing to the undo stack"""
 
     # jatkokehari
     def _redo(self):
-        "pushes 1 feature from undo stack to the drawing"
+        """pushes 1 feature from undo stack to the drawing"""
 
     def _create_widgets(self):
-        "creates all the GUI controls"
+        """creates all the GUI controls"""
 
         Button(self._frame, text='Save and Exit',
                command=self._save_and_exit
@@ -106,6 +106,7 @@ class DrawingView(View):
             pass
 
     def _save_and_exit(self):
+        """Saves the current drawing to database"""
         self._master.title('Art +')
         backend.save_curr_dwg()
         self._handle_prev()

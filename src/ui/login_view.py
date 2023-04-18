@@ -6,10 +6,10 @@ from backend.backend import backend, WrongPassword
 
 
 class LoginView(View):
-    "Makes logging in possible via GUI"
+    """Makes logging in possible via GUI"""
 
     def __init__(self, master, menu_view):
-        "creates the view"
+        """creates the view"""
 
         super().__init__(master, menu_view, master.quit)
         self._create_widgets()
@@ -17,7 +17,7 @@ class LoginView(View):
         self._re_pass = re.compile(r"^\w{8,16}$")
 
     def _create_widgets(self):
-        "populates the widgets in the view"
+        """populates the widgets in the view"""
 
         Label(self._frame, text='username:').grid(
             row=0, column=0, sticky=W, pady=2)
@@ -37,7 +37,7 @@ class LoginView(View):
                command=self._handle_prev).grid(columnspan=2)
 
     def _process_input(self):
-        "tries logging in by getting the content of entries"
+        """tries logging in by getting the content of entries"""
 
         username = self._user.get()
         password = self._pass.get()
