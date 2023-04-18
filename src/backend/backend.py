@@ -85,7 +85,7 @@ class Backend:
         select u.id, password, iif(t.user_id, 1, 0) as role
         from users u
         left join teachers t on t.user_id == u.id
-        where username=?""", [username]).fetchone()
+        where username=?""", (username, )).fetchone()
 
         # user exists
         if db_res:
@@ -99,13 +99,15 @@ class Backend:
         # user does not exist, registering here
         else:
             cur = self._conn.cursor()
-            cur.execute("insert into users(username, password) values (?, ?)", [
-                        username, password])
+            cur.execute(
+                "insert into users(username, password) values (?, ?)",
+                (username, password))
 
-            row_id = cur.lastrowid
+            user_id = cur.lastrowid
 
             if teacher:
-                self._conn.execute("insert into teachers values(?)", [row_id])
+                self._conn.execute(
+                    "insert into teachers values(?)", (user_id, ))
 
         # either login or register succeeded
         self._curr_user = User(user_id, username, teacher)
@@ -238,4 +240,5 @@ class Backend:
         "dragged while left button pressed"
 
 
+# exporting this one here
 backend = Backend()

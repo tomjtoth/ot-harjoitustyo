@@ -76,11 +76,8 @@ class DrawingView(View):
                     ).grid(column=1, row=3)
 
         Label(self._frame, text='↓ border - fill ↓').grid(columnspan=2, row=4)
-        self._add_clr_btn('black')
-        self._add_clr_btn('white')
-        self._add_clr_btn('red')
-        self._add_clr_btn('green')
-        self._add_clr_btn('blue')
+        for color in 'black white red green blue yellow purple gray brown pink orange lime'.split():
+            self._add_clr_btn(color)
 
         # ehkä jatkokehitykseen...
         # Button(self._frame, text='custom').grid(column=0, row=10)
@@ -93,6 +90,9 @@ class DrawingView(View):
             bg='white'
         )
         canv.grid(column=2, row=0, rowspan=20)
+        backend.set_cmd(RECTANGLE)
+        backend.set_border('red')
+        backend.set_fill('green')
 
         # separating app logic from UI here (?)
         self._master.title(f'Art + {self._curr_dwg.name}')
