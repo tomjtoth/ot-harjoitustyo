@@ -32,5 +32,10 @@ class TestUserManagement(unittest.TestCase):
         self.assertRaises(
             WrongPassword, self.backend.login_register, "student", "wrong_pw")
 
-    def test_drawing(self):
+class TestDrawing(unittest.TestCase):
+    def setUp(self):
+        self.backend = Backend(":memory:")
         self.backend.login_register("user", "user")
+
+    def test_drawing(self):
+        pass
