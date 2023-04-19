@@ -38,4 +38,4 @@ class TestDrawing(unittest.TestCase):
         self.backend.login_register("user", "user")
 
     def test_drawing(self):
-        pass
+        pass #test
