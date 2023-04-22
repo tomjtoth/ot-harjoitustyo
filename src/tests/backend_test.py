@@ -8,12 +8,14 @@ from entities.drawing import Drawing
 # meaning individual tests cannot be initiated, only in batches
 TEST_DB = f"{uuid4()}_test.db"
 
+
 class DummyEvent:
     """mimicking user clicks to tkinter.Canvas"""
 
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+
 
 class DummyCanvas:
     """
@@ -24,7 +26,7 @@ class DummyCanvas:
 
     def create_rectangle(self, *args, **kwargs):
         pass
-    
+
     def create_oval(self, *args, **kwargs):
         pass
 
@@ -33,6 +35,7 @@ class DummyCanvas:
 
     def create_text(self, *args, **kwargs):
         pass
+
 
 class TestUserLoginRegister(unittest.TestCase):
     def setUp(self):
@@ -62,18 +65,19 @@ class TestUserLoginRegister(unittest.TestCase):
         self.assertRaises(
             WrongPassword, self.backend.login_register, "student", "wrong_pw")
 
+
 class TestDrawing(unittest.TestCase):
     def setUp(self):
         self.backend = Backend(TEST_DB)
         self.backend.login_register("user1", "user1")
-        
+
         self.test_features = (
             (OVAL, 'purple', 'black'),
             (RECTANGLE, 'green', 'yellow'),
             (LINE, 'blue', 'gray'),
             (TEXT, 'red', 'white'))
-        self.test_ev1 = DummyEvent(20,20)
-        self.test_ev2 = DummyEvent(100,100)
+        self.test_ev1 = DummyEvent(20, 20)
+        self.test_ev2 = DummyEvent(100, 100)
         self.test_texts = ('jotain', 'test', 'faf', 'asd')
 
     def test_0_save_new_drawing_complex(self):
@@ -81,19 +85,20 @@ class TestDrawing(unittest.TestCase):
             ilmeisesti näitä käynnistetään AAKKOSISSA..
             siksi _0_ tagi..
         """
-        self.backend.set_curr_dwg(Drawing("4 features at 20,20,100,100", 640, 480))
+        self.backend.set_curr_dwg(
+            Drawing("4 features at 20,20,100,100", 640, 480))
         self.backend.set_canvas(DummyCanvas())
-        
+
         # adding 4 features
         for (cmd, fill, border) in self.test_features:
             self.backend.set_cmd(cmd)
             self.backend.set_fill(fill)
             self.backend.set_border(border)
-            
+
             # emulate user clicks
             self.backend.b1_up(self.test_ev1)
             self.backend.b1_up(self.test_ev2)
-        
+
         self.backend.save_curr_dwg()
 
     def test_1_dwg_content_intact(self):
@@ -111,29 +116,28 @@ class TestDrawing(unittest.TestCase):
                     the last TEXT in the self.test_features actually creates 2 entries
                 """
                 orig_cmd, *orig_clrs = self.test_features[i]
-            
+
             self.assertEqual(cmd, orig_cmd)
-            
+
             # OVAL, RECTANGLE, LINE
             if len(coords) == 4:
-                self.assertListEqual(coords, 
-                    [self.test_ev1.x, self.test_ev1.y, self.test_ev2.x, self.test_ev2.y])
+                self.assertListEqual(coords,
+                                     [self.test_ev1.x, self.test_ev1.y, self.test_ev2.x, self.test_ev2.y])
 
                 if cmd == LINE:
-                    self.assertDictEqual(kwargs, 
-                        {'fill': orig_clrs[0], 'width': 10})
+                    self.assertDictEqual(kwargs,
+                                         {'fill': orig_clrs[0], 'width': 10})
                 else:
-                    self.assertDictEqual(kwargs, 
-                        {'fill': orig_clrs[0], 'outline': orig_clrs[1], 'width': 10})
-                
+                    self.assertDictEqual(kwargs,
+                                         {'fill': orig_clrs[0], 'outline': orig_clrs[1], 'width': 10})
+
             # TEXT
             else:
-                self.assertIn(coords, 
-                    ([self.test_ev1.x, self.test_ev1.y],[self.test_ev2.x, self.test_ev2.y]))
+                self.assertIn(coords,
+                              ([self.test_ev1.x, self.test_ev1.y], [self.test_ev2.x, self.test_ev2.y]))
                 self.assertIn(kwargs['text'], self.test_texts)
 
             i += 1
-
 
     def test_2_user_cannot_see_others_dwgs(self):
         # this is a completely new user who has no drawings
@@ -141,6 +145,7 @@ class TestDrawing(unittest.TestCase):
 
         # user1 has 1 dwg in the DB at this point, but user2 shall not see it
         self.assertEqual(len(self.backend.get_user_dwgs()), 0)
+
 
 # funny, this will not cleanUp if a test fails...
 unittest.addModuleCleanup(lambda: os.unlink(TEST_DB))
