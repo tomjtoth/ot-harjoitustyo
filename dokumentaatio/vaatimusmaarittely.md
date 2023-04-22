@@ -12,8 +12,8 @@ Alussa tulee olemaan vain _opiskelija_ rooliset käyttäjät, jotkut saavat luod
 
 Sovelluksessa tulee olemaan alla näkymät:
 - [X] login/register/exit
-- [ ] menu (new/load/exit valinnat)
-- [ ] piirtonäkymä (save/load/exit napit ainakin tänne)
+- [X] menu (new/load/exit valinnat)
+- [X] piirtonäkymä (save/load/exit napit ainakin tänne)
   - [ ] _opettajat_ saavat tallentaa myös **template** -ina
 
 ## Perusversion tarjoama toiminnallisuus
@@ -32,11 +32,8 @@ Sovelluksessa tulee olemaan alla näkymät:
 - [X] Käyttäjä voi luoda uuden piirroksen
   - [X] opiskelijoiden luomat piirrokset näkyvät ainoastaan sen luoneelle käyttäjälle + opettajille
 - [X] Käyttäjä saa lisätä yleisiä elementtejä piirrokselleen
-  - [ ] elementtien järjestys on vaihdettavissa
-  - [ ] elementtien (rajoitetun määrän) ominaisuudet ovat saadettavissa
 - [X] Käyttäjä saa tallentaa piirroksensa ja nimettää sitä
-- [ ] Käyttäjä saa ladata omat piirrokset ja **template** -it
-  - [ ] _Opettaja_ rooliset käyttäjät saa myös avata muiden luomat piirrokset
+- [X] Käyttäjä saa ladata omat piirrokset ja **template** -it
 - [X] Käyttäjä saa kirjautua ulos
 
 ## Jatkokehitysideoita
@@ -50,4 +47,6 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] mahdollisesti *opettajarooli*
 - [X] salasanojen monimutkaisuus \w{8,16}
 - [ ] piirroksia saa tallentaa tiedostona
-- 
+- [ ] elementtien järjestys on vaihdettavissa
+- [ ] elementtien (rajoitetun määrän) ominaisuudet ovat saadettavissa
+- [ ] _Opettaja_ rooliset käyttäjät saa myös avata muiden luomat piirrokset
