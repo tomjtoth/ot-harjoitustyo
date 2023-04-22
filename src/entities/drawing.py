@@ -19,7 +19,7 @@ class Drawing:
     def add(self, cmd, *args, **kwargs):
         """buffers used commands in a reproducible way"""
 
-        self._content.append([cmd, args, kwargs])
+        self._content.append((cmd, args, kwargs))
 
     def reproduce(self):
         """this could probably be a simple getter..."""

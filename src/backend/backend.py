@@ -119,8 +119,8 @@ class Backend:
 
     def get_user_dwgs(self):
         return [
-            Drawing(name, width, height, id, json.loads(content))
-            for name, width, height, id, content
+            Drawing(name, width, height, dwg_id, json.loads(content))
+            for name, width, height, dwg_id, content
             in self._conn.execute("""
             select name, width, height, id, content
             from drawings d
@@ -129,6 +129,7 @@ class Backend:
         ]
 
     def save_curr_dwg(self):
+        """stores python's Drawing's content to SQLite in JSON"""
 
         # existing drawing
         if self._curr_dwg.id:
