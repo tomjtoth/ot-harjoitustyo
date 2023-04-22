@@ -11,6 +11,8 @@ hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittami
 - [arkkitehtuurikuvaus](dokumentaatio/arkkitehtuuri.md)
 - [työtunnit](dokumentaatio/tunnit.md)
 - [muutokset](dokumentaatio/changelog.md)
+- [vk5 julkaisu](https://github.com/tomjtoth/ot-harjoitustyo/releases/tag/viikko5)
+
 
 ## Asennus
 

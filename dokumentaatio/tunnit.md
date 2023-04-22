@@ -16,4 +16,5 @@
 | 16.4   | 3  | backend: saving/loading drawings via JSON to/from sqlite |
 | 17.4   | 3  | backend save/load debugged, title changes, tests, pylint |
 | 18.4   | 2  | docs, classDiagram | %42
-| | 42 | total|
+| 22.4   | 5  | docs, backend tests, rearranged vaatimusmäärittely.md | %47
+| | 47 | total|

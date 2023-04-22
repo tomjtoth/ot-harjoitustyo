@@ -21,4 +21,4 @@
 
 ## Viikko 5
 - tests for backend
-
+- moved unreasonable goals to jatkokehari
