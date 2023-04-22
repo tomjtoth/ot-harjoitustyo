@@ -18,3 +18,7 @@
 - able to load earlier drawing
 - alpha about ready
 - classDiagram
+
+## Viikko 5
+- tests for backend
+
