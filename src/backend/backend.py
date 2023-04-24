@@ -35,9 +35,12 @@ class Backend:
 
         self._clicks = 0
         self._curr_cmd = RECTANGLE
+        self._text_helper = None
         self._curr_fill = 'red'
         self._curr_border = 'green'
-        self._coords = deque()
+        
+        # added 1 coord for text here
+        self._coords = deque([0,0])
         self._canvas = None
 
     def _create_scheme(self):
@@ -178,6 +181,11 @@ class Backend:
 
         self._curr_cmd = cmd
 
+    def set_text_query_helper(self, pop_up):
+        """Makes backend able to call a pop-up window for querying the text"""
+
+        self._text_helper = pop_up
+
     def set_fill(self, color):
         """sets the fill color"""
 
@@ -221,8 +229,10 @@ class Backend:
             self._coords.popleft()
 
         if self._curr_cmd == TEXT:
+
             self._draw(self._curr_cmd,
-                       self._coords[2], self._coords[3], text='jotain')
+                       self._coords[2], self._coords[3], text=self._text_helper(), fill=self._curr_fill)
+
         else:
             self._clicks += 1
 

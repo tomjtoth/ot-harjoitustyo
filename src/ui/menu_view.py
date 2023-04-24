@@ -1,5 +1,6 @@
-from tkinter import messagebox, Listbox, Button, Label, W, Toplevel, Entry, Label, StringVar, IntVar
+from tkinter import messagebox, Listbox, Button, Label, W, Toplevel, Entry, Label
 from ui.common import View
+from ui.prompt_new_dwg import PromptNewDrawing
 from backend.backend import backend
 from entities.drawing import Drawing
 
@@ -49,35 +50,9 @@ class MenuView(View):
 
         dwg_i = self._lb_dwg.curselection()[0]
 
-        # should be separated to own module at some point..
         if dwg_i == 0:
-            pop_up = Toplevel(self._frame)
-            pop_up.title('New DWG')
-
-            name = StringVar(pop_up, value='jotain uusi')
-            Label(pop_up, text='name:').grid(column=0, row=0)
-            Entry(pop_up, textvariable=name).grid(column=1, row=0)
-
-            width = IntVar(pop_up, value=800)
-            Label(pop_up, text='width:').grid(column=0, row=1)
-            Entry(pop_up, textvariable=width).grid(column=1, row=1)
-
-            height = IntVar(pop_up, value=600)
-            Label(pop_up, text='height:').grid(column=0, row=2)
-            Entry(pop_up, textvariable=height).grid(column=1, row=2)
-
-            Button(pop_up, text='Create', command=lambda: self._new_dwg(name, width, height, pop_up.destroy)
-                   ).grid(columnspan=2, row=3)
-
-            pop_up.wait_window()
-
+            PromptNewDrawing(self._frame)
         else:
             backend.set_curr_dwg(self._dwgs[dwg_i-1])
 
         self._handle_next()
-
-    def _new_dwg(self, name, width, height, killswitch):
-        """helper method for setting up a new drawing"""
-
-        backend.set_curr_dwg(Drawing(name.get(), width.get(), height.get()))
-        killswitch()

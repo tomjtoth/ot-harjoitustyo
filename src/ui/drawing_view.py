@@ -1,5 +1,6 @@
-from tkinter import Button, Label, Canvas, Radiobutton, IntVar
+from tkinter import Button, Label, Canvas, Radiobutton, IntVar, font
 from ui.common import View
+from ui.prompt_text import PromptNewText
 from backend.backend import backend, RECTANGLE, OVAL, LINE, TEXT
 
 
@@ -101,6 +102,8 @@ class DrawingView(View):
         canv.bind('<B1-Motion>', backend.b1_mv)
         canv.bind('<B1-ButtonRelease>', backend.b1_up)
 
+        backend.set_text_query_helper(self.query_text)
+
         # add extra controls/functionalities
         if self._curr_user.teacher:
             pass
@@ -110,3 +113,10 @@ class DrawingView(View):
         self._master.title('Art +')
         backend.save_curr_dwg()
         self._handle_prev()
+
+    def query_text(self):
+        """public, called from backend"""
+
+        pop_up = PromptNewText(self._frame)
+        return pop_up.process()
+
