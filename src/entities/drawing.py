@@ -40,7 +40,7 @@ class Drawing:
 
     def clear_undo_stack(self):
         """forgets about the rest, used when adding a new feature and there's still"""
-        if len(self._undo_stack) >0:
+        if len(self._undo_stack) > 0:
             self._undo_stack.clear()
 
     def redo(self):

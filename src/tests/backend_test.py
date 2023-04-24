@@ -78,7 +78,6 @@ class TestDrawing(unittest.TestCase):
             (TEXT, 'red', 'white'))
         self.test_ev1 = DummyEvent(20, 20)
         self.test_ev2 = DummyEvent(100, 100)
-        self.test_texts = ('jotain', 'test', 'faf', 'asd')
 
     def test_0_save_new_drawing_complex(self):
         """
@@ -96,8 +95,11 @@ class TestDrawing(unittest.TestCase):
             self.backend.set_border(border)
 
             # emulate user clicks
-            self.backend.b1_up(self.test_ev1)
-            self.backend.b1_up(self.test_ev2)
+            if cmd == TEXT:
+                self.backend.b1_up(self.test_ev2, "testi teksti")
+            else:
+                self.backend.b1_up(self.test_ev1)
+                self.backend.b1_up(self.test_ev2)
 
         self.backend.save_curr_dwg()
 
@@ -135,7 +137,7 @@ class TestDrawing(unittest.TestCase):
             else:
                 self.assertIn(coords,
                               ([self.test_ev1.x, self.test_ev1.y], [self.test_ev2.x, self.test_ev2.y]))
-                self.assertIn(kwargs['text'], self.test_texts)
+                self.assertEqual(kwargs['text'], "testi teksti")
 
             i += 1
 

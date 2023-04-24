@@ -35,12 +35,10 @@ class Backend:
 
         self._clicks = 0
         self._curr_cmd = RECTANGLE
-        self._text_helper = None
+        self._text_prompter = None
         self._curr_fill = 'red'
         self._curr_border = 'green'
-        
-        # added 1 coord for text here
-        self._coords = deque([0,0])
+        self._coords = deque()
         self._canvas = None
 
     def _create_scheme(self):
@@ -172,7 +170,6 @@ class Backend:
         """assigns the current canvas to backend"""
 
         self._canvas = canvas
-
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
             self._draw(feature, *coords, logging=False, **kwargs)
 
@@ -181,10 +178,10 @@ class Backend:
 
         self._curr_cmd = cmd
 
-    def set_text_query_helper(self, pop_up):
+    def set_text_prompter(self, prompt):
         """Makes backend able to call a pop-up window for querying the text"""
 
-        self._text_helper = pop_up
+        self._text_prompter = prompt
 
     def set_fill(self, color):
         """sets the fill color"""
@@ -218,7 +215,7 @@ class Backend:
     def b1_dn(self, event):
         """left button pressed"""
 
-    def b1_up(self, event):
+    def b1_up(self, event, test_helper=None):
         """left button released"""
 
         self._coords.append(event.x)
@@ -230,20 +227,19 @@ class Backend:
 
         if self._curr_cmd == TEXT:
 
-            self._draw(self._curr_cmd,
-                       self._coords[2], self._coords[3], text=self._text_helper(), fill=self._curr_fill)
+            self._draw(self._curr_cmd, self._coords[-2], self._coords[-1],
+                       text=test_helper if test_helper else self._text_prompter(),
+                       fill=self._curr_fill)
 
         else:
             self._clicks += 1
 
             if self._clicks % 2 == 0:
                 if self._curr_cmd == LINE:
-                    self._draw(self._curr_cmd,
-                               *self._coords,
+                    self._draw(self._curr_cmd, *self._coords,
                                fill=self._curr_fill, width=10)
                 else:
-                    self._draw(self._curr_cmd,
-                               *self._coords,
+                    self._draw(self._curr_cmd, *self._coords,
                                outline=self._curr_border, fill=self._curr_fill, width=10)
 
     # jatkokehari?

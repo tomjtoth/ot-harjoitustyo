@@ -1,6 +1,6 @@
 from tkinter import Button, Label, Canvas, Radiobutton, IntVar, font
 from ui.common import View
-from ui.prompt_text import PromptNewText
+from ui.prompt_text import PromptText
 from backend.backend import backend, RECTANGLE, OVAL, LINE, TEXT
 
 
@@ -102,7 +102,7 @@ class DrawingView(View):
         canv.bind('<B1-Motion>', backend.b1_mv)
         canv.bind('<B1-ButtonRelease>', backend.b1_up)
 
-        backend.set_text_query_helper(self.query_text)
+        backend.set_text_prompter(self.prompt_text)
 
         # add extra controls/functionalities
         if self._curr_user.teacher:
@@ -110,13 +110,16 @@ class DrawingView(View):
 
     def _save_and_exit(self):
         """Saves the current drawing to database"""
+
         self._master.title('Art +')
         backend.save_curr_dwg()
         self._handle_prev()
 
-    def query_text(self):
-        """public, called from backend"""
+    def prompt_text(self):
+        """
+            makes backend able to create a pop-up window
+            and prompt the user for text input
+        """
 
-        pop_up = PromptNewText(self._frame)
-        return pop_up.process()
-
+        prompt = PromptText(self._frame)
+        return prompt.process()

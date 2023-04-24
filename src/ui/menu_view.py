@@ -1,6 +1,6 @@
 from tkinter import messagebox, Listbox, Button, Label, W, Toplevel, Entry, Label
 from ui.common import View
-from ui.prompt_new_dwg import PromptNewDrawing
+from ui.prompt_drawing import PromptDrawing
 from backend.backend import backend
 from entities.drawing import Drawing
 
@@ -18,14 +18,14 @@ class MenuView(View):
     def _create_widgets(self):
         """internal func, creates all the GUI controls"""
 
-        Button(
-            self._frame, text=f"Logout ({self._user.name})", command=self._handle_prev).grid()
+        Button(self._frame, text=f"Logout ({self._user.name})",
+               command=self._handle_prev).grid()
 
         self._dwgs = backend.get_user_dwgs()
 
         self._lb_dwg = Listbox(self._frame)
-        self._lb_dwg.bind(
-            '<Return>', lambda _event: self._proceed_to_next_view())
+        self._lb_dwg.bind('<Return>',
+                          lambda _event: self._proceed_to_next_view())
         self._lb_dwg.grid()
         self._lb_dwg.insert(0, '<NEW DRAWING>')
 
@@ -51,7 +51,9 @@ class MenuView(View):
         dwg_i = self._lb_dwg.curselection()[0]
 
         if dwg_i == 0:
-            PromptNewDrawing(self._frame)
+            pop_up = PromptDrawing(self._frame)
+            name, width, height = pop_up.process()
+            backend.set_curr_dwg(Drawing(name, width, height))
         else:
             backend.set_curr_dwg(self._dwgs[dwg_i-1])
 
