@@ -22,3 +22,6 @@
 ## Viikko 5
 - tests for backend
 - moved unreasonable goals to jatkokehari
+- further separated GUI views
+- prompting user for text input
+- login/register seqenceDiagram

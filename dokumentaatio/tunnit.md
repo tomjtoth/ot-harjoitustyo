@@ -17,4 +17,5 @@
 | 17.4   | 3  | backend save/load debugged, title changes, tests, pylint |
 | 18.4   | 2  | docs, classDiagram | %42
 | 22.4   | 5  | docs, backend tests, rearranged vaatimusmäärittely.md | %47
-| | 47 | total|
+| 24.4   | 4  | docs, prompts, GUI separation | %51
+|        | 51 | total |

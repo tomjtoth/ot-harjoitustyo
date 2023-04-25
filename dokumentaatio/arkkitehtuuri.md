@@ -12,11 +12,12 @@ Pakkaus `Ui` vastaa käyttäjän ja sovelluslogiikan vuorovaikutuksesta. `Backen
 
 ## Käyttöliittymä
 
-On 3 päänäkymää, ja 1 ponnahdusikkuna:
+On 3 päänäkymää, ja 2 ponnahdusikkuna:
 - Kirjautumisnäkymä
 - Menu näkymä
     - Uuden piirroksen tietojen näkymä
 - Piirtonäkymä
+    - Tekstin syötöikkuna
 
 Näissä 3 päänäkymässä on yhteiset piirteet joita siirsin `View` luokkaan. Ne myös käyttävät saman ikkunan, joten kerralla vain 1 voi olla aktiivinen ja `Ui` luokka on vastuussa niitten vaihdosta. 
 
@@ -31,6 +32,7 @@ Piirtonäkymässä yritin matkia kunnon vanha `MS Pain`t; käyttäjä voi säät
 - oval
 - viiva
 - teksti
+    - pyytää syötteen käyttäjältä
 
 Eka 3 komento pystyy värejäkin käsitellä, joita myös napeilla pystyy valita.
 
@@ -88,115 +90,68 @@ _Backend_ hallitsee tietokantaa taustalla, jossa 4 taulua:
 Olisi mennyt hirvee määrä resurssi keksiä ja normalisoida kaiken tarvitun taulun, joten piirrosten sisällön tallennus on varsin epätehokasta, JSON muodossa `TEXT`:ina. SQLite kuitenkin tukee myös json scalar funktioita, joten on myös mahdollista laajentaa sovellusta tässä muodossakin.
 Tarkempaa tiedot kannan rakenteesta löydät Backend luokan [create_scheme](../src/backend/backend.py) methodista.
 
-## Bonusyritys laittaa kasaan kaiken
+## Päätoiminnallisuudet
 
-Jätin sen kuitenkin kesken..
+### Yhdistetty login/register toiminta
+
+Jos käyttäjä ei ole olemassa, sitä rekisteröidään, pääsy seuraavaan näkymään tapahtuu heti.
 
 ```mermaid
-classDiagram
-    View <|-- LoginView
-    View <|-- MenuView
-    View <|-- DrawingView
-    
-    Ui --|> Tk
-    Ui --> LoginView
-    Ui --> MenuView
-    Ui --> DrawingView
-    
-    Backend <.. LoginView
-    Backend <.. MenuView
-    Backend <.. DrawingView
+---
+title: Registration process
+---
+sequenceDiagram
+  actor User
+  participant UI
+  participant Backend
+  User->>+UI: click "Login/Register" button
+  UI->>+Backend: login_register("matti", "p4ssW0rD")
+  Backend->>+SQLite: select ... where username == 'matti'
+  SQLite-->>-Backend: 0 rows
+  Backend->>+SQLite: insert into users...;
+  SQLite-->>-Backend: last_row_id
+  Backend->>Backend: self._curr_user = User(...)
+  Backend-->>-UI: 
+  UI->>UI: change to MenuView
+  UI-->>-User: 
 
-class User {
-    +Int id
-    +String name
-    +Boolean teacher
-}
+```
 
-class Drawing {
-    +String name
-    +Int id
-    +Int width
-    +Int height
-    #List content
+Alla "Wrong password" kaaviossa näkyy miten olemassa olevan käyttäjän autentikointi tapahtuu.
 
-    +add(cmd, *args, **kwargs)
-    +reproduce()
-    +stringify()
-}
+```mermaid
+---
+title: Wrong password
+---
+sequenceDiagram
+  actor User
+  participant UI
+  participant Backend
+  User->>+UI: click "Login/Register" button
+  UI->>+Backend: login_register("matti", "lalalalalalala")
+  Backend->>+SQLite: select password, ... where username == 'matti'
+  SQLite-->>-Backend: 1 row
+  Backend->>Backend: compare 2 passwords
+  Backend-->>-UI: raise WrongPassword
+  UI-->>-User: 
 
-class Backend {
-    ~Int RECTANGLE
-    ~Int OVAL
-    ~Int LINE
-    ~INT TEXT
-    ~Exception WrongPassword
+```
 
-    #SQLite.Connection conn
-    #User curr_user
-    #Drawing curr_dwg
-    #Int clicks
-    #Int curr_cmd
-    #String curr_fill
-    #String curr_border
-    #deque coords
-    #tkinter.Canvas canvas
+```mermaid
+---
+title: Right password
+---
+sequenceDiagram
+  actor User
+  participant UI
+  participant Backend
+  User->>+UI: click "Login/Register" button
+  UI->>+Backend: login_register("matti", "p4ssW0rD")
+  Backend->>+SQLite: select password, ... where username == 'matti'
+  SQLite-->>-Backend: 1 row
+  Backend->>Backend: compare 2 passwords
+  Backend->>Backend: self._curr_user = User(...)
+  Backend-->>-UI: 
+  UI-->>-User: 
 
-    #create_scheme()
-    #draw(Int, *args, Boolean, **kwargs)
-    
-    +login_register()
-    +get_curr_user()
-    +get_user_dwgs()
-    +save_curr_dwg()
-    +get_curr_dwg()
-    +set_curr_dwg(Drawing)
-    +set_canvas(Canvas)
-    +set_cmd(Int)
-    +set_fill(String)
-    +set_border(String)
-    +b1_up(tkinter.Event)
-    +b1_mv(tkinter.Event)
-    +b1_dn(tkinter.Event)
-    
-
-}
-
-
-class View {
-    #master
-    #frame
-    #handle_prev
-    #handle_next
-    +destroy()
-    +show()
-}
-
-class LoginView {
-    #re_user
-    #re_pass
-
-    #create_widgets()
-    #process_input()
-}
-
-class MenuView {
-    #user
-
-    #create_widgets()
-    #proceed_to_next_view()
-    #new_dwg(name, width, height)
-}
-
-class DrawingView {
-    #User curr_user
-    #Drawing curr_dwg
-    #rows
-
-    #create_widgets()
-    #add_clr_btn(color)
-    #undo()
-    #redo()
-    #save_and_exit()
-}
 ```
