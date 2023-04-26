@@ -14,7 +14,6 @@ Sovelluksessa tulee olemaan alla näkymät:
 - [X] login/register/exit
 - [X] menu (new/load/exit valinnat)
 - [X] piirtonäkymä (save/load/exit napit ainakin tänne)
-  - [ ] _opettajat_ saavat tallentaa myös **template** -ina
 
 ## Perusversion tarjoama toiminnallisuus
 
@@ -50,3 +49,6 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] elementtien järjestys on vaihdettavissa
 - [ ] elementtien (rajoitetun määrän) ominaisuudet ovat saadettavissa
 - [ ] _Opettaja_ rooliset käyttäjät saa myös avata muiden luomat piirrokset
+- [ ] _opettajat_ saavat tallentaa myös **template** -ina
+- [X] undo/redo toiminta
+- [ ] fontin koon ja tyypin säätö käyttäjän toimesta

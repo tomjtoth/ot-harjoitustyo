@@ -1,6 +1,10 @@
 import json
 
 
+class EmptyStackError(Exception):
+    """Raised when there's no more features to un-/redo"""
+
+
 class Drawing:
     """
         A drawing or a template modifiable by users
@@ -37,6 +41,8 @@ class Drawing:
         """moves the last feature to the undo stack"""
         if len(self._content) > 0:
             self._undo_stack.append(self._content.pop())
+        else:
+            raise EmptyStackError
 
     def clear_undo_stack(self):
         """forgets about the rest, used when adding a new feature and there's still"""
@@ -44,5 +50,10 @@ class Drawing:
             self._undo_stack.clear()
 
     def redo(self):
+        """If there's something on the undo stack, return it to the drawing"""
         if len(self._undo_stack) > 0:
-            self._content.append(self._undo_stack.pop())
+            feature = self._undo_stack.pop()
+            self._content.append(feature)
+            return feature
+
+        raise EmptyStackError

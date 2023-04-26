@@ -1,4 +1,4 @@
-from tkinter import Button, Label, Canvas, Radiobutton, IntVar, font
+from tkinter import Button, Label, Canvas, Radiobutton, IntVar, font, DISABLED, NORMAL
 from ui.common import View
 from ui.prompt_text import PromptText
 from backend.backend import backend, RECTANGLE, OVAL, LINE, TEXT
@@ -31,14 +31,6 @@ class DrawingView(View):
 
         self._rows += 1
 
-    # jatkokehari
-    def _undo(self):
-        """pushes the last feature from the drawing to the undo stack"""
-
-    # jatkokehari
-    def _redo(self):
-        """pushes 1 feature from undo stack to the drawing"""
-
     def _create_widgets(self):
         """creates all the GUI controls"""
 
@@ -46,11 +38,11 @@ class DrawingView(View):
                command=self._save_and_exit
                ).grid(columnspan=2)
 
-        self._undo_btn = Button(self._frame, text='undo', state='disabled',
+        self._undo_btn = Button(self._frame, text='undo',
                                 command=self._undo)
         self._undo_btn.grid(column=0, row=1)
 
-        self._redo_btn = Button(self._frame, text='redo', state='disabled',
+        self._redo_btn = Button(self._frame, text='redo',
                                 command=self._redo)
         self._redo_btn.grid(column=1, row=1)
 
@@ -123,3 +115,27 @@ class DrawingView(View):
 
         prompt = PromptText(self._frame)
         return prompt.process()
+
+    def _undo(self):
+        """pushes the last feature from the drawing to the undo stack"""
+        if backend.undo():
+            # self._redo_btn['state'] = NORMAL
+            # self._undo_btn['state'] = DISABLED
+            pass
+
+        else:
+            # self._redo_btn['state'] = DISABLED
+            # self._undo_btn['state'] = NORMAL
+            pass
+
+    def _redo(self):
+        """pushes 1 feature from undo stack to the drawing"""
+        if backend.redo():
+            # self._redo_btn['state'] = NORMAL
+            # self._undo_btn['state'] = DISABLED
+            pass
+
+        else:
+            # self._redo_btn['state'] = DISABLED
+            # self._undo_btn['state'] = NORMAL
+            pass

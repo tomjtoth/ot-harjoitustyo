@@ -3,7 +3,7 @@ import hashlib
 import json
 from collections import deque
 from entities.user import User
-from entities.drawing import Drawing
+from entities.drawing import Drawing, EmptyStackError
 
 RECTANGLE = 0
 OVAL = 1
@@ -40,6 +40,7 @@ class Backend:
         self._curr_border = 'green'
         self._coords = deque()
         self._canvas = None
+        self._canv_hist = None
 
     def _create_scheme(self):
         """creating scheme on 1st run, no-op later.."""
@@ -170,6 +171,7 @@ class Backend:
         """assigns the current canvas to backend"""
 
         self._canvas = canvas
+        self._canv_hist = []
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
             self._draw(feature, *coords, logging=False, **kwargs)
 
@@ -197,16 +199,20 @@ class Backend:
         """creates features on the current canvas + stores recipie in drawing's log"""
 
         if cmd == RECTANGLE:
-            self._canvas.create_rectangle(*args, **kwargs)
+            self._canv_hist.append(
+                self._canvas.create_rectangle(*args, **kwargs))
 
         elif cmd == OVAL:
-            self._canvas.create_oval(*args, **kwargs)
+            self._canv_hist.append(
+                self._canvas.create_oval(*args, **kwargs))
 
         elif cmd == LINE:
-            self._canvas.create_line(*args, **kwargs)
+            self._canv_hist.append(
+                self._canvas.create_line(*args, **kwargs))
 
         elif cmd == TEXT:
-            self._canvas.create_text(*args, **kwargs)
+            self._canv_hist.append(
+                self._canvas.create_text(*args, **kwargs))
 
         if logging:
             self._curr_dwg.add(cmd, *args, **kwargs)
@@ -221,12 +227,13 @@ class Backend:
         self._coords.append(event.x)
         self._coords.append(event.y)
 
-        # keeping track of 2 (x,y) coords
+        # keeping track of only 2(x,y) coords
         while len(self._coords) > 4:
             self._coords.popleft()
 
         if self._curr_cmd == TEXT:
 
+            self._curr_dwg.clear_undo_stack()
             self._draw(self._curr_cmd, self._coords[-2], self._coords[-1],
                        text=test_helper if test_helper else self._text_prompter(),
                        fill=self._curr_fill)
@@ -235,6 +242,8 @@ class Backend:
             self._clicks += 1
 
             if self._clicks % 2 == 0:
+
+                self._curr_dwg.clear_undo_stack()
                 if self._curr_cmd == LINE:
                     self._draw(self._curr_cmd, *self._coords,
                                fill=self._curr_fill, width=10)
@@ -245,6 +254,25 @@ class Backend:
     # jatkokehari?
     def b1_mv(self, event):
         """dragged while left button pressed"""
+
+    def undo(self):
+        try:
+            self._curr_dwg.undo()
+            self._canvas.delete(
+                self._canv_hist.pop())
+            return True
+
+        except EmptyStackError:
+            return False
+
+    def redo(self):
+        try:
+            cmd, coords, kwargs = self._curr_dwg.redo()
+            self._draw(cmd, *coords, logging=False, **kwargs)
+            return True
+
+        except EmptyStackError:
+            return False
 
 
 # exporting this one here
