@@ -42,7 +42,7 @@ class DrawingView(View):
                                 command=self._undo)
         self._undo_btn.grid(column=0, row=1)
 
-        self._redo_btn = Button(self._frame, text='redo',
+        self._redo_btn = Button(self._frame, text='redo', state=DISABLED,
                                 command=self._redo)
         self._redo_btn.grid(column=1, row=1)
 
@@ -89,7 +89,7 @@ class DrawingView(View):
 
         # separating app logic from UI here (?)
         self._master.title(f'Art + {self._curr_dwg.name}')
-        backend.set_canvas(canv)
+        backend.set_canvas(canv, self.undo_btn_enabler)
         canv.bind('<Button-1>', backend.b1_dn)
         canv.bind('<B1-Motion>', backend.b1_mv)
         canv.bind('<B1-ButtonRelease>', backend.b1_up)
@@ -119,23 +119,17 @@ class DrawingView(View):
     def _undo(self):
         """pushes the last feature from the drawing to the undo stack"""
         if backend.undo():
-            # self._redo_btn['state'] = NORMAL
-            # self._undo_btn['state'] = DISABLED
-            pass
-
+            self._redo_btn['state'] = NORMAL
         else:
-            # self._redo_btn['state'] = DISABLED
-            # self._undo_btn['state'] = NORMAL
-            pass
-
+            self._undo_btn['state'] = DISABLED
+            
     def _redo(self):
         """pushes 1 feature from undo stack to the drawing"""
         if backend.redo():
-            # self._redo_btn['state'] = NORMAL
-            # self._undo_btn['state'] = DISABLED
-            pass
-
+            self._undo_btn['state'] = NORMAL
         else:
-            # self._redo_btn['state'] = DISABLED
-            # self._undo_btn['state'] = NORMAL
-            pass
+            self._redo_btn['state'] = DISABLED
+            
+    def undo_btn_enabler(self):
+        """Makes Backend able to enable the undo button"""
+        self._undo_btn['state'] = NORMAL

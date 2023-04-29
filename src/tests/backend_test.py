@@ -16,6 +16,8 @@ class DummyEvent:
         self.x = x
         self.y = y
 
+def DummyCallback():
+    """Backend._draw() spams the undo button into NORMAL state"""
 
 class DummyCanvas:
     """
@@ -86,7 +88,7 @@ class TestDrawing(unittest.TestCase):
         """
         self.backend.set_curr_dwg(
             Drawing("4 features at 20,20,100,100", 640, 480))
-        self.backend.set_canvas(DummyCanvas())
+        self.backend.set_canvas(DummyCanvas(), DummyCallback)
 
         # adding 4 features
         for (cmd, fill, border) in self.test_features:

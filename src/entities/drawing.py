@@ -27,7 +27,7 @@ class Drawing:
         self._content.append((cmd, args, kwargs))
 
     def reproduce(self):
-        """this could probably be a simple getter..."""
+        """used when reproducing a drawing upon opening it"""
 
         for feature in self._content:
             yield feature
@@ -39,21 +39,24 @@ class Drawing:
 
     def undo(self):
         """moves the last feature to the undo stack"""
-        if len(self._content) > 0:
+        length = len(self._content)
+        if length > 0:
             self._undo_stack.append(self._content.pop())
+            return length-1 > 0
         else:
-            raise EmptyStackError
+            raise EmptyStackError('no content left')
 
     def clear_undo_stack(self):
-        """forgets about the rest, used when adding a new feature and there's still"""
+        """forgets the rest of undone features"""
         if len(self._undo_stack) > 0:
             self._undo_stack.clear()
 
     def redo(self):
         """If there's something on the undo stack, return it to the drawing"""
-        if len(self._undo_stack) > 0:
+        length = len(self._undo_stack)
+        if length > 0:
             feature = self._undo_stack.pop()
             self._content.append(feature)
-            return feature
+            return feature, length-1 > 0
 
-        raise EmptyStackError
+        raise EmptyStackError('nothing on the undo stack')

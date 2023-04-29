@@ -41,6 +41,7 @@ class Backend:
         self._coords = deque()
         self._canvas = None
         self._canv_hist = None
+        self._undo_btn_setter = None
 
     def _create_scheme(self):
         """creating scheme on 1st run, no-op later.."""
@@ -167,11 +168,12 @@ class Backend:
 
         self._curr_dwg = dwg
 
-    def set_canvas(self, canvas):
+    def set_canvas(self, canvas, undo_btn_setter):
         """assigns the current canvas to backend"""
 
         self._canvas = canvas
         self._canv_hist = []
+        self._undo_btn_setter = undo_btn_setter
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
             self._draw(feature, *coords, logging=False, **kwargs)
 
@@ -216,6 +218,9 @@ class Backend:
 
         if logging:
             self._curr_dwg.add(cmd, *args, **kwargs)
+            self._undo_btn_setter()
+            self._curr_dwg.clear_undo_stack()
+        
 
     # placeholder atm
     def b1_dn(self, event):
@@ -233,7 +238,6 @@ class Backend:
 
         if self._curr_cmd == TEXT:
 
-            self._curr_dwg.clear_undo_stack()
             self._draw(self._curr_cmd, self._coords[-2], self._coords[-1],
                        text=test_helper if test_helper else self._text_prompter(),
                        fill=self._curr_fill)
@@ -243,7 +247,6 @@ class Backend:
 
             if self._clicks % 2 == 0:
 
-                self._curr_dwg.clear_undo_stack()
                 if self._curr_cmd == LINE:
                     self._draw(self._curr_cmd, *self._coords,
                                fill=self._curr_fill, width=10)
@@ -257,19 +260,24 @@ class Backend:
 
     def undo(self):
         try:
-            self._curr_dwg.undo()
+            state = self._curr_dwg.undo()
             self._canvas.delete(
                 self._canv_hist.pop())
-            return True
+            return state
 
         except EmptyStackError:
             return False
 
     def redo(self):
+        """_summary_
+
+        Returns:
+            tuple: _description_
+        """
         try:
-            cmd, coords, kwargs = self._curr_dwg.redo()
+            (cmd, coords, kwargs), state  = self._curr_dwg.redo()
             self._draw(cmd, *coords, logging=False, **kwargs)
-            return True
+            return state
 
         except EmptyStackError:
             return False

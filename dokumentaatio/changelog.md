@@ -25,3 +25,6 @@
 - further separated GUI views
 - prompting user for text input
 - login/register seqenceDiagram
+
+## Viikko 6
+- undo/redo functionality added
