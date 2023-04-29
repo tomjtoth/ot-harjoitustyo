@@ -8,7 +8,7 @@ from entities.drawing import Drawing
 class MenuView(View):
     """shows a list of drawings available to the user"""
 
-    def __init__(self, master, drawing_view, login_view):
+    def __init__(self, master, drawing_view: callable, login_view: callable):
         """creates the main menu view"""
 
         super().__init__(master, drawing_view, login_view)

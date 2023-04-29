@@ -4,7 +4,7 @@ from tkinter.ttk import Frame
 class View:
     """Common for all views"""
 
-    def __init__(self, master, next_view, prev_view):
+    def __init__(self, master, next_view: callable, prev_view: callable):
         """Assigns the drawable frame"""
 
         self._master = master
@@ -14,7 +14,7 @@ class View:
 
         # this is not working as the active GUI Control captures the keypress
         # no Quality of Life impro here, then...
-        #self._frame.bind('<Escape>', lambda _ev: self._handle_prev())
+        # self._frame.bind('<Escape>', lambda _ev: self._handle_prev())
 
     def destroy(self):
         """Destroys the drawable frame"""

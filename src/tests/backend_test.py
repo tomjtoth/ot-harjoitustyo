@@ -16,8 +16,10 @@ class DummyEvent:
         self.x = x
         self.y = y
 
+
 def DummyCallback():
     """Backend._draw() spams the undo button into NORMAL state"""
+
 
 class DummyCanvas:
     """

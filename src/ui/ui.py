@@ -28,7 +28,7 @@ class Ui:
 
         self._change_view(DrawingView(self._master, self.show_menu))
 
-    def _change_view(self, next_view):
+    def _change_view(self, next_view: callable):
         """internal function that takes care of switching between the 3 main views"""
 
         if self._curr_view:

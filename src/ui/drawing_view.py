@@ -7,7 +7,7 @@ from backend.backend import backend, RECTANGLE, OVAL, LINE, TEXT
 class DrawingView(View):
     """the main drawing view"""
 
-    def __init__(self, master, menu_view):
+    def __init__(self, master, menu_view: callable):
         """creates the main drawing view"""
 
         super().__init__(master, None, menu_view)
@@ -122,14 +122,14 @@ class DrawingView(View):
             self._redo_btn['state'] = NORMAL
         else:
             self._undo_btn['state'] = DISABLED
-            
+
     def _redo(self):
         """pushes 1 feature from undo stack to the drawing"""
         if backend.redo():
             self._undo_btn['state'] = NORMAL
         else:
             self._redo_btn['state'] = DISABLED
-            
+
     def undo_btn_enabler(self):
         """Makes Backend able to enable the undo button"""
         self._undo_btn['state'] = NORMAL

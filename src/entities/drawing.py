@@ -43,8 +43,8 @@ class Drawing:
         if length > 0:
             self._undo_stack.append(self._content.pop())
             return length-1 > 0
-        else:
-            raise EmptyStackError('no content left')
+
+        raise EmptyStackError('no content left')
 
     def clear_undo_stack(self):
         """forgets the rest of undone features"""

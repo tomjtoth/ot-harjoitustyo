@@ -8,7 +8,7 @@ from backend.backend import backend, WrongPassword
 class LoginView(View):
     """Makes logging in possible via GUI"""
 
-    def __init__(self, master, menu_view):
+    def __init__(self, master, menu_view: callable):
         """creates the view"""
 
         super().__init__(master, menu_view, master.quit)

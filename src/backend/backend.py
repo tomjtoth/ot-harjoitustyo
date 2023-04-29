@@ -16,10 +16,7 @@ class WrongPassword(Exception):
 
 
 class Backend:
-    """
-        takes care of literally EVERYTHING,
-        will break it up later once everything works.....
-    """
+    """takes care of EVERYTHING"""
 
     # pylint: disable=too-many-instance-attributes
     # I need all of them!
@@ -50,11 +47,11 @@ class Backend:
         create table if not exists users(
             id integer primary key,
             username text not null,
-            
+
             --stored as md5sum, never gonna do it in PROD, pinky-promise
             password text not null
         );
-        
+
         create table if not exists teachers(
             user_id integer primary key references users(id)
         );
@@ -65,7 +62,7 @@ class Backend:
             name text not null,
             width integer not null,
             height integer not null,
-            
+
             -- JSON
             content text not null
         );
@@ -163,12 +160,12 @@ class Backend:
         """gets the current drawing"""
         return self._curr_dwg
 
-    def set_curr_dwg(self, dwg):
+    def set_curr_dwg(self, dwg: Drawing):
         """assigns the current drawing to backend"""
 
         self._curr_dwg = dwg
 
-    def set_canvas(self, canvas, undo_btn_setter):
+    def set_canvas(self, canvas, undo_btn_setter: callable):
         """assigns the current canvas to backend"""
 
         self._canvas = canvas
@@ -177,29 +174,34 @@ class Backend:
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
             self._draw(feature, *coords, logging=False, **kwargs)
 
-    def set_cmd(self, cmd):
+    def set_cmd(self, cmd: int):
         """sets the currently initiated command"""
 
         self._curr_cmd = cmd
 
-    def set_text_prompter(self, prompt):
+    def set_text_prompter(self, prompt: callable):
         """Makes backend able to call a pop-up window for querying the text"""
 
         self._text_prompter = prompt
 
-    def set_fill(self, color):
+    def set_fill(self, color: str):
         """sets the fill color"""
 
         self._curr_fill = color
 
-    def set_border(self, color):
+    def set_border(self, color: str):
         """sets the border color"""
 
         self._curr_border = color
 
-    def _draw(self, cmd, *args, logging=True, **kwargs):
-        """creates features on the current canvas + stores recipie in drawing's log"""
+    def _draw(self, cmd: int, *args, logging: bool = True, **kwargs):
+        """creates features on the current canvas + stores recipie in drawing's log
 
+        Args:
+            cmd (int): can be one of RECTANGLE, OVAL, LINE, TEXT
+            logging (bool, optional): whether the feature should be added to the persistent
+                                      storage or not. Defaults to True.
+        """
         if cmd == RECTANGLE:
             self._canv_hist.append(
                 self._canvas.create_rectangle(*args, **kwargs))
@@ -220,15 +222,19 @@ class Backend:
             self._curr_dwg.add(cmd, *args, **kwargs)
             self._undo_btn_setter()
             self._curr_dwg.clear_undo_stack()
-        
 
     # placeholder atm
+
     def b1_dn(self, event):
         """left button pressed"""
 
-    def b1_up(self, event, test_helper=None):
-        """left button released"""
+    def b1_up(self, event, test_helper: str = None):
+        """triggered when the user releases mouse button 1
 
+        Args:
+            event (tkinter event): X and Y coords are used
+            test_helper (str, optional): used during tests only. Defaults to None.
+        """
         self._coords.append(event.x)
         self._coords.append(event.y)
 
@@ -259,6 +265,11 @@ class Backend:
         """dragged while left button pressed"""
 
     def undo(self):
+        """moves 1 feature from the contents of the dwg to the undo stack
+
+        Returns:
+            bool: True if there's more feaure in the dwg
+        """
         try:
             state = self._curr_dwg.undo()
             self._canvas.delete(
@@ -269,13 +280,13 @@ class Backend:
             return False
 
     def redo(self):
-        """_summary_
+        """moves 1 feature from the undo stack to the contents of the dwg
 
         Returns:
-            tuple: _description_
+            bool: True if there's more on the undo stack, else False
         """
         try:
-            (cmd, coords, kwargs), state  = self._curr_dwg.redo()
+            (cmd, coords, kwargs), state = self._curr_dwg.redo()
             self._draw(cmd, *coords, logging=False, **kwargs)
             return state
 

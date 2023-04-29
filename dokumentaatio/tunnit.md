@@ -19,4 +19,5 @@
 | 22.4   | 5  | docs, backend tests, rearranged vaatimusmäärittely.md | %47
 | 24.4   | 4  | docs, prompts, GUI separation | %51
 | 26.4   | 4  | undo, redo | %55
-|        | 55 | total |
+| 29.4   | 4  | undo, redo debugging, docstrings, type notations | %59
+|        | 59 | total |
