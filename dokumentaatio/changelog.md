@@ -28,3 +28,4 @@
 
 ## Viikko 6
 - undo/redo functionality added
+- tests at 80%

@@ -2,16 +2,15 @@
 
 Sovelluksen avulla surkeimmat käyttäjätkin pystyy luoda mahtavia avantgarde kuvia!
 
-## WiP
-
-hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittamiseen tarviit 2 klikkauksen, tekstiä laitetaan yhdellä
+Hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittamiseen tarviit 2 klikkauksen, tekstiä laitetaan yhdellä
 
 ## Dokumentaatio
+
 - [vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)
 - [arkkitehtuurikuvaus](dokumentaatio/arkkitehtuuri.md)
 - [työtunnit](dokumentaatio/tunnit.md)
 - [muutokset](dokumentaatio/changelog.md)
-- [vk5 julkaisu](https://github.com/tomjtoth/ot-harjoitustyo/releases/tag/viikko5)
+- [julkaisut](https://github.com/tomjtoth/ot-harjoitustyo/releases)
 
 
 ## Asennus
