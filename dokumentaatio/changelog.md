@@ -29,3 +29,6 @@
 ## Viikko 6
 - undo/redo functionality added
 - tests at 80%
+
+## Viikko 7
+- added pw confirmation pop-up

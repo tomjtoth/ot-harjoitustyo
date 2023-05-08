@@ -73,14 +73,15 @@ class Backend:
         """)
 
     # just 1 button, no time for 2 different methodzzZZzz
-    def login_register(self, username: str, password: str, teacher: bool = False):
+    def login_register(self, username: str, password: str, pw_conf: callable, teacher: bool = False):
         """
         password should be passed as plain text, hashing happens within this func
-        3rd argument is only used during registration
+        pw_conf is used upon registration
+        last argument is only used during registration
         """
 
         # storing pw as md5sum BAD IDEA!!!!
-        password = hashlib.md5(password.encode('utf-8')).hexdigest()
+        pw_hash = hashlib.md5(password.encode('utf-8')).hexdigest()
         db_res = self._conn.execute("""
         select u.id, password, iif(t.user_id, 1, 0) as role
         from users u
@@ -90,7 +91,7 @@ class Backend:
         # user exists
         if db_res:
 
-            if password != db_res[1]:
+            if pw_hash != db_res[1]:
                 raise WrongPassword
 
             user_id = db_res[0]
@@ -98,10 +99,13 @@ class Backend:
 
         # user does not exist, registering here
         else:
+            if password != pw_conf():
+                raise WrongPassword
+
             cur = self._conn.cursor()
             cur.execute(
                 "insert into users(username, password) values (?, ?)",
-                (username, password))
+                (username, pw_hash))
 
             user_id = cur.lastrowid
 

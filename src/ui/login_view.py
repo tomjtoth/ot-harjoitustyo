@@ -2,6 +2,7 @@ import re
 from textwrap import dedent
 from tkinter import messagebox, Entry, Button, Label, W
 from ui.common import View
+from ui.prompt_pw import PromptPassword
 from backend.backend import backend, WrongPassword
 
 
@@ -62,8 +63,12 @@ class LoginView(View):
             return
 
         try:
-            backend.login_register(username, password)
+            backend.login_register(username, password, self.pw_confirmation)
             self._handle_next()
 
         except WrongPassword:
             messagebox.showerror("Login/register failed", "wrong password")
+
+    def pw_confirmation(self):
+        conf = PromptPassword(self._master, self._user.get())
+        return conf.process()

@@ -20,4 +20,5 @@
 | 24.4   | 4  | docs, prompts, GUI separation | %51
 | 26.4   | 4  | undo, redo | %55
 | 29.4   | 4  | undo, redo debugging, docstrings, type notations | %59
-|        | 59 | total |
+| 8.5    | 2  | issue1: pw_conf on registr. | %61
+|        | 61 | total |

@@ -7,7 +7,7 @@ class PromptText(Toplevel):
     def __init__(self, master):
         """"""
 
-        super().__init__()
+        super().__init__(master)
         self.title('Text to input')
 
         self._text = StringVar(self, value='jotain')
