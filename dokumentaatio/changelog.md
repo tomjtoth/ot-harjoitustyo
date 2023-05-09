@@ -32,3 +32,5 @@
 
 ## Viikko 7
 - added pw confirmation pop-up
+- added checks for new drawing's attributes
+

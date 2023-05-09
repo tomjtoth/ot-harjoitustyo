@@ -1,7 +1,8 @@
-from tkinter import messagebox, Listbox, Button, Label, W, Toplevel, Entry, Label
+from tkinter import Listbox, Button
 from ui.common import View
 from ui.prompt_drawing import PromptDrawing
-from backend.backend import backend
+from backend.user_mgmt import user_mgr
+from backend.dwg_mgmt import dwg_mgr
 from entities.drawing import Drawing
 
 
@@ -12,7 +13,7 @@ class MenuView(View):
         """creates the main menu view"""
 
         super().__init__(master, drawing_view, login_view)
-        self._user = backend.get_curr_user()
+        self._user = user_mgr.get_curr_user()
         self._create_widgets()
 
     def _create_widgets(self):
@@ -21,7 +22,7 @@ class MenuView(View):
         Button(self._frame, text=f"Logout ({self._user.name})",
                command=self._handle_prev).grid()
 
-        self._dwgs = backend.get_user_dwgs()
+        self._dwgs = dwg_mgr.get_user_dwgs(self._user.id)
 
         self._lb_dwg = Listbox(self._frame)
         self._lb_dwg.bind('<Return>',
@@ -53,8 +54,8 @@ class MenuView(View):
         if dwg_i == 0:
             pop_up = PromptDrawing(self._frame)
             name, width, height = pop_up.process()
-            backend.set_curr_dwg(Drawing(name, width, height))
+            dwg_mgr.set_curr_dwg(Drawing(name, width, height))
         else:
-            backend.set_curr_dwg(self._dwgs[dwg_i-1])
+            dwg_mgr.set_curr_dwg(self._dwgs[dwg_i-1])
 
         self._handle_next()

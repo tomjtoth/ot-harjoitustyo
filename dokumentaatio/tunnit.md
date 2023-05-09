@@ -20,5 +20,6 @@
 | 24.4   | 4  | docs, prompts, GUI separation | %51
 | 26.4   | 4  | undo, redo | %55
 | 29.4   | 4  | undo, redo debugging, docstrings, type notations | %59
-| 8.5    | 2  | issue1: pw_conf on registr. | %61
+| 8.5    | 2  | issue1: pw_conf on registr; split backend to 2 entites | %61
+| 9.5    | 2  | issue1 continued, GUI impros | %63
 |        | 61 | total |

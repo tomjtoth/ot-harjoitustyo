@@ -1,34 +1,19 @@
-import sqlite3
-import hashlib
 import json
 from collections import deque
-from entities.user import User
 from entities.drawing import Drawing, EmptyStackError
+from backend.database import db
+from backend.user_mgmt import user_mgr
 
 RECTANGLE = 0
 OVAL = 1
 LINE = 2
 TEXT = 3
 
-
-class WrongPassword(Exception):
-    pass
-
-
-class Backend:
-    """takes care of EVERYTHING"""
-
-    # pylint: disable=too-many-instance-attributes
-    # I need all of them!
-
-    def __init__(self, path: str = "backend.db"):
+class DrawingManager:
+    def __init__(self):
         """path can be overridden for testing purposes, e.g. ':memory:'"""
-
-        self._conn = sqlite3.connect(path)
-        self._conn.isolation_level = None
-        self._curr_user = None
+        self._conn = db
         self._curr_dwg = None
-        self._create_scheme()
 
         self._clicks = 0
         self._curr_cmd = RECTANGLE
@@ -40,96 +25,15 @@ class Backend:
         self._canv_hist = None
         self._undo_btn_setter = None
 
-    def _create_scheme(self):
-        """creating scheme on 1st run, no-op later.."""
-
-        self._conn.executescript("""
-        create table if not exists users(
-            id integer primary key,
-            username text not null,
-
-            --stored as md5sum, never gonna do it in PROD, pinky-promise
-            password text not null
-        );
-
-        create table if not exists teachers(
-            user_id integer primary key references users(id)
-        );
-
-        create table if not exists drawings(
-            id integer primary key,
-            owner_id integer references users(id),
-            name text not null,
-            width integer not null,
-            height integer not null,
-
-            -- JSON
-            content text not null
-        );
-
-        create table if not exists templates(
-            drawing_id integer primary key references drawings(id)
-        );
-        """)
-
-    # just 1 button, no time for 2 different methodzzZZzz
-    def login_register(self, username: str, password: str, pw_conf: callable, teacher: bool = False):
-        """
-        password should be passed as plain text, hashing happens within this func
-        pw_conf is used upon registration
-        last argument is only used during registration
-        """
-
-        # storing pw as md5sum BAD IDEA!!!!
-        pw_hash = hashlib.md5(password.encode('utf-8')).hexdigest()
-        db_res = self._conn.execute("""
-        select u.id, password, iif(t.user_id, 1, 0) as role
-        from users u
-        left join teachers t on t.user_id == u.id
-        where username=?""", (username, )).fetchone()
-
-        # user exists
-        if db_res:
-
-            if pw_hash != db_res[1]:
-                raise WrongPassword
-
-            user_id = db_res[0]
-            teacher = bool(db_res[2])
-
-        # user does not exist, registering here
-        else:
-            if password != pw_conf():
-                raise WrongPassword
-
-            cur = self._conn.cursor()
-            cur.execute(
-                "insert into users(username, password) values (?, ?)",
-                (username, pw_hash))
-
-            user_id = cur.lastrowid
-
-            if teacher:
-                self._conn.execute(
-                    "insert into teachers values(?)", (user_id, ))
-
-        # either login or register succeeded
-        self._curr_user = User(user_id, username, teacher)
-
-    def get_curr_user(self):
-        """retreives the currently logged in user"""
-
-        return self._curr_user
-
-    def get_user_dwgs(self):
+    def get_user_dwgs(self, user_id):
         return [
             Drawing(name, width, height, dwg_id, json.loads(content))
             for name, width, height, dwg_id, content
-            in self._conn.execute("""
+            in self._conn.fetchall("""
             select name, width, height, id, content
             from drawings d
             where owner_id=?
-            """, (self._curr_user.id, )).fetchall()
+            """, (user_id, ))
         ]
 
     def save_curr_dwg(self):
@@ -153,7 +57,7 @@ class Backend:
                 content
             ) values (?,?,?,?,?)
             """, (
-                self._curr_user.id,
+                user_mgr.get_curr_user().id,
                 self._curr_dwg.name,
                 self._curr_dwg.width,
                 self._curr_dwg.height,
@@ -299,4 +203,4 @@ class Backend:
 
 
 # exporting this one here
-backend = Backend()
+dwg_mgr = DrawingManager()
