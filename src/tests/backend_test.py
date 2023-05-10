@@ -48,7 +48,7 @@ class TestUserLoginRegister(unittest.TestCase):
 
         user_mgr.login_register("teacher", "teacher", lambda: "teacher", True)
         teacher = user_mgr.get_curr_user()
-        self.assertEqual(('teacher', True), (teacher.name, teacher.teacher))
+        self.assertEqual(("teacher", True), (teacher.name, teacher.teacher))
 
         # login works
         user_mgr.login_register("teacher", "teacher")
@@ -60,7 +60,7 @@ class TestUserLoginRegister(unittest.TestCase):
     def test_login_register_student(self):
         user_mgr.login_register("student", "student", lambda: "student")
         student = user_mgr.get_curr_user()
-        self.assertEqual(('student', False), (student.name, student.teacher))
+        self.assertEqual(("student", False), (student.name, student.teacher))
 
         # login works
         user_mgr.login_register("student", "student")
@@ -74,10 +74,10 @@ class TestDrawing(unittest.TestCase):
     def setUp(self):
         user_mgr.login_register("student", "student")
         self.test_features = (
-            (OVAL, 'purple', 'black'),
-            (RECTANGLE, 'green', 'yellow'),
-            (LINE, 'blue', 'gray'),
-            (TEXT, 'red', 'white'))
+            (OVAL, "purple", "black"),
+            (RECTANGLE, "green", "yellow"),
+            (LINE, "blue", "gray"),
+            (TEXT, "red", "white"))
         self.test_ev1 = DummyEvent(20, 20)
         self.test_ev2 = DummyEvent(100, 100)
 
@@ -125,19 +125,19 @@ class TestDrawing(unittest.TestCase):
 
                 if cmd == LINE:
                     self.assertDictEqual(kwargs,
-                                         {'fill': orig_clrs[0], 'width': 10})
+                                         {"fill": orig_clrs[0], "width": 10})
                 else:
                     self.assertDictEqual(kwargs,
-                                         {'fill': orig_clrs[0],
-                                          'outline': orig_clrs[1],
-                                          'width': 10})
+                                         {"fill": orig_clrs[0],
+                                          "outline": orig_clrs[1],
+                                          "width": 10})
 
             # TEXT
             else:
                 self.assertIn(coords,
                               ([self.test_ev1.x, self.test_ev1.y],
                                [self.test_ev2.x, self.test_ev2.y]))
-                self.assertEqual(kwargs['text'], "testi teksti")
+                self.assertEqual(kwargs["text"], "testi teksti")
 
             i += 1
 

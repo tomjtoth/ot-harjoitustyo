@@ -19,8 +19,8 @@ class DrawingManager:
         self._clicks = 0
         self._curr_cmd = RECTANGLE
         self._text_prompter = None
-        self._curr_fill = 'red'
-        self._curr_border = 'green'
+        self._curr_fill = "red"
+        self._curr_border = "green"
         self._coords = deque()
         self._canvas = None
         self._canv_hist = None

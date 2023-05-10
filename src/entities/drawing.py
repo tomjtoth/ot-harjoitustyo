@@ -44,7 +44,7 @@ class Drawing:
             self._undo_stack.append(self._content.pop())
             return length-1 > 0
 
-        raise EmptyStackError('no content left')
+        raise EmptyStackError("no content left")
 
     def clear_undo_stack(self):
         """forgets the rest of undone features"""
@@ -59,4 +59,4 @@ class Drawing:
             self._content.append(feature)
             return feature, length-1 > 0
 
-        raise EmptyStackError('nothing on the undo stack')
+        raise EmptyStackError("nothing on the undo stack")

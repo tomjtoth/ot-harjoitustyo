@@ -37,7 +37,7 @@ class UserManager:
         """
 
         # storing pw as md5sum BAD IDEA!!!!
-        pw_hash = hashlib.md5(password.encode('utf-8')).hexdigest()
+        pw_hash = hashlib.md5(password.encode("utf-8")).hexdigest()
         db_res = self._conn.fetchone("""
         select u.id, password, iif(t.user_id, 1, 0) as role
         from users u

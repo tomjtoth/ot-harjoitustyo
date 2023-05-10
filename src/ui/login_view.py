@@ -20,21 +20,21 @@ class LoginView(View):
     def _create_widgets(self):
         """populates the widgets in the view"""
 
-        Label(self._frame, text='username:').grid(
+        Label(self._frame, text="username:").grid(
             row=0, column=0, sticky=W, pady=2)
         self._user = Entry(self._frame)
         self._user.grid(row=0, column=1, pady=2)
         self._user.focus_set()
 
-        Label(self._frame, text='password:').grid(
+        Label(self._frame, text="password:").grid(
             row=1, column=0, sticky=W, pady=2)
         self._pass = Entry(self._frame, show="*")
         self._pass.grid(row=1, column=1, pady=2)
-        self._pass.bind('<Return>', lambda _event: self._process_input())
+        self._pass.bind("<Return>", lambda _event: self._process_input())
 
-        Button(self._frame, text='Login/register',
+        Button(self._frame, text="Login/register",
                command=self._process_input).grid(columnspan=2)
-        Button(self._frame, text='Quit',
+        Button(self._frame, text="Quit",
                command=self._handle_prev).grid(columnspan=2)
 
     def _process_input(self):
@@ -71,8 +71,8 @@ class LoginView(View):
 
     def pw_confirmation(self):
         return PromptText(self._master,
-                          f'Registering {self._user.get()}',
-                          {'text': 'repeat password: '},
-                          {'show': '*'},
-                          {'text': 'Confirm user creation'}
+                          f"Registering {self._user.get()}",
+                          {"text": "repeat password: "},
+                          {"show": "*"},
+                          {"text": "Confirm user creation"}
                           ).get()

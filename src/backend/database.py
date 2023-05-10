@@ -3,7 +3,7 @@ import os
 
 
 class Database:
-    def __init__(self, path: str = "backend.db"):
+    def __init__(self, path: str):
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
         self._create_scheme()
@@ -53,4 +53,4 @@ class Database:
         return self._conn.execute(sql, params).fetchall()
 
 
-db = Database(':memory:') if os.environ.get("TESTING") else Database()
+db = Database(":memory:" if os.environ.get("TESTING") else "backend.db")

@@ -7,30 +7,30 @@ class PromptDrawing(Toplevel):
     def __init__(self, master):
 
         super().__init__(master)
-        self.title('New DWG')
+        self.title("New DWG")
         self.resizable(False, False)
         # self.grab_set()
 
-        self._title = StringVar(value='uusi')
-        Label(self, text='name:').grid(column=0, row=0)
+        self._title = StringVar(value="uusi")
+        Label(self, text="name:").grid(column=0, row=0)
         entr_t = Entry(self, textvariable=self._title)
         entr_t.grid(column=1, row=0)
-        entr_t.bind('<Return>', lambda _ev: entr_w.focus_set())
+        entr_t.bind("<Return>", lambda _ev: entr_w.focus_set())
         entr_t.focus_set()
 
         self._width = IntVar(self, value=800)
-        Label(self, text='width:').grid(column=0, row=1)
+        Label(self, text="width:").grid(column=0, row=1)
         entr_w = Entry(self, textvariable=self._width)
         entr_w.grid(column=1, row=1)
-        entr_w.bind('<Return>', lambda _ev: entr_h.focus_set())
+        entr_w.bind("<Return>", lambda _ev: entr_h.focus_set())
 
         self._height = IntVar(self, value=600)
-        Label(self, text='height:').grid(column=0, row=2)
+        Label(self, text="height:").grid(column=0, row=2)
         entr_h = Entry(self, textvariable=self._height)
         entr_h.grid(column=1, row=2)
-        entr_h.bind('<Return>', lambda _ev: self._validate())
+        entr_h.bind("<Return>", lambda _ev: self._validate())
 
-        Button(self, text='Create', command=self._validate
+        Button(self, text="Create", command=self._validate
                ).grid(columnspan=2, row=3)
 
     def process(self):

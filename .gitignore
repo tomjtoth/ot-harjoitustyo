@@ -4,4 +4,3 @@ htmlcov
 __pycache__
 backend.db
 .vscode
-*_test.db

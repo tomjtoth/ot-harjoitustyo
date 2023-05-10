@@ -25,16 +25,16 @@ class MenuView(View):
         self._dwgs = dwg_mgr.get_user_dwgs(self._user.id)
 
         self._lb_dwg = Listbox(self._frame)
-        self._lb_dwg.bind('<Return>',
+        self._lb_dwg.bind("<Return>",
                           lambda _event: self._proceed_to_next_view())
         self._lb_dwg.grid()
-        self._lb_dwg.insert(0, '<NEW DRAWING>')
+        self._lb_dwg.insert(0, "<NEW DRAWING>")
 
         # select 1st element
         self._lb_dwg.select_set(0)
         self._lb_dwg.event_generate("<<ListboxSelect>>")
         self._lb_dwg.focus_set()
-        self._lb_dwg.bind('<Return>', lambda _ev: self._proceed_to_next_view())
+        self._lb_dwg.bind("<Return>", lambda _ev: self._proceed_to_next_view())
 
         for i, dwg in enumerate(self._dwgs):
             self._lb_dwg.insert(i+1, dwg.name)

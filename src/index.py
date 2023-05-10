@@ -8,10 +8,10 @@ def main():
     """entry point for the application"""
 
     tk_window = Tk()
-    tk_window.title('Art +')
+    tk_window.title("Art +")
     tk_window.resizable(False, False)
 
-    tk_window.iconphoto(True, PhotoImage(file='src/ui/van_gogh_icon.png'))
+    tk_window.iconphoto(True, PhotoImage(file="src/ui/van_gogh_icon.png"))
 
     ui_window = Ui(tk_window)
     ui_window.show_login()
@@ -19,5 +19,5 @@ def main():
     tk_window.mainloop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
