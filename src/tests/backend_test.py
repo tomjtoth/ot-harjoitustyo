@@ -1,12 +1,14 @@
+from entities.drawing import Drawing
+from backend.user_mgmt import user_mgr, WrongPassword
+from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 import unittest
 import os
-from uuid import uuid4
-from backend.backend import Backend, WrongPassword, RECTANGLE, OVAL, LINE, TEXT
-from entities.drawing import Drawing
 
-# testing drawing related stuff requires a persistent DB
-# meaning individual tests cannot be initiated, only in batches
-TEST_DB = f"{uuid4()}_test.db"
+os.environ.setdefault("TESTING", "setting this here for Backend")
+
+
+# needed because these tests build on top of each other, test order is strict
+unittest.TestLoader.sortTestMethodsUsing = None
 
 
 class DummyEvent:
@@ -17,7 +19,7 @@ class DummyEvent:
         self.y = y
 
 
-def DummyCallback():
+def dummy_callback():
     """Backend._draw() spams the undo button into NORMAL state"""
 
 
@@ -42,39 +44,35 @@ class DummyCanvas:
 
 
 class TestUserLoginRegister(unittest.TestCase):
-    def setUp(self):
-        self.backend = Backend(TEST_DB)
-
     def test_login_register_teacher(self):
-        self.backend.login_register("teacher", "teacher", True)
-        teacher = self.backend.get_curr_user()
+
+        user_mgr.login_register("teacher", "teacher", lambda: "teacher", True)
+        teacher = user_mgr.get_curr_user()
         self.assertEqual(('teacher', True), (teacher.name, teacher.teacher))
 
         # login works
-        self.backend.login_register("teacher", "teacher")
+        user_mgr.login_register("teacher", "teacher")
 
         # login raises WrongPassword
         self.assertRaises(
-            WrongPassword, self.backend.login_register, "teacher", "wrong_pw")
+            WrongPassword, user_mgr.login_register, "teacher", "wrong_pw")
 
     def test_login_register_student(self):
-        self.backend.login_register("student", "student")
-        student = self.backend.get_curr_user()
+        user_mgr.login_register("student", "student", lambda: "student")
+        student = user_mgr.get_curr_user()
         self.assertEqual(('student', False), (student.name, student.teacher))
 
         # login works
-        self.backend.login_register("student", "student")
+        user_mgr.login_register("student", "student")
 
         # login raises WrongPassword
         self.assertRaises(
-            WrongPassword, self.backend.login_register, "student", "wrong_pw")
+            WrongPassword, user_mgr.login_register, "student", "wrong_pw")
 
 
 class TestDrawing(unittest.TestCase):
     def setUp(self):
-        self.backend = Backend(TEST_DB)
-        self.backend.login_register("user1", "user1")
-
+        user_mgr.login_register("student", "student")
         self.test_features = (
             (OVAL, 'purple', 'black'),
             (RECTANGLE, 'green', 'yellow'),
@@ -83,32 +81,28 @@ class TestDrawing(unittest.TestCase):
         self.test_ev1 = DummyEvent(20, 20)
         self.test_ev2 = DummyEvent(100, 100)
 
-    def test_0_save_new_drawing_complex(self):
-        """
-            ilmeisesti näitä käynnistetään AAKKOSISSA..
-            siksi _0_ tagi..
-        """
-        self.backend.set_curr_dwg(
+    def test_0_save_new_dwg_complex(self):
+        dwg_mgr.set_curr_dwg(
             Drawing("4 features at 20,20,100,100", 640, 480))
-        self.backend.set_canvas(DummyCanvas(), DummyCallback)
+        dwg_mgr.set_canvas(DummyCanvas(), dummy_callback)
 
         # adding 4 features
         for (cmd, fill, border) in self.test_features:
-            self.backend.set_cmd(cmd)
-            self.backend.set_fill(fill)
-            self.backend.set_border(border)
+            dwg_mgr.set_cmd(cmd)
+            dwg_mgr.set_fill(fill)
+            dwg_mgr.set_border(border)
 
             # emulate user clicks
             if cmd == TEXT:
-                self.backend.b1_up(self.test_ev2, "testi teksti")
+                dwg_mgr.b1_up(self.test_ev2, "testi teksti")
             else:
-                self.backend.b1_up(self.test_ev1)
-                self.backend.b1_up(self.test_ev2)
+                dwg_mgr.b1_up(self.test_ev1)
+                dwg_mgr.b1_up(self.test_ev2)
 
-        self.backend.save_curr_dwg()
+        dwg_mgr.save_curr_dwg()
 
     def test_1_dwg_content_intact(self):
-        dwg = self.backend.get_user_dwgs()[0]
+        dwg = dwg_mgr.get_user_dwgs(user_mgr.get_curr_user().id)[0]
 
         self.assertTupleEqual(
             ("4 features at 20,20,100,100", 640, 480),
@@ -118,9 +112,7 @@ class TestDrawing(unittest.TestCase):
         for (cmd, coords, kwargs) in dwg.reproduce():
             # 1 color for LINE, 2 colors for the other 3 features
             if i < 4:
-                """ 
-                    the last TEXT in the self.test_features actually creates 2 entries
-                """
+                # the last TEXT in the self.test_features actually creates 2 entries
                 orig_cmd, *orig_clrs = self.test_features[i]
 
             self.assertEqual(cmd, orig_cmd)
@@ -128,30 +120,31 @@ class TestDrawing(unittest.TestCase):
             # OVAL, RECTANGLE, LINE
             if len(coords) == 4:
                 self.assertListEqual(coords,
-                                     [self.test_ev1.x, self.test_ev1.y, self.test_ev2.x, self.test_ev2.y])
+                                     [self.test_ev1.x, self.test_ev1.y,
+                                      self.test_ev2.x, self.test_ev2.y])
 
                 if cmd == LINE:
                     self.assertDictEqual(kwargs,
                                          {'fill': orig_clrs[0], 'width': 10})
                 else:
                     self.assertDictEqual(kwargs,
-                                         {'fill': orig_clrs[0], 'outline': orig_clrs[1], 'width': 10})
+                                         {'fill': orig_clrs[0],
+                                          'outline': orig_clrs[1],
+                                          'width': 10})
 
             # TEXT
             else:
                 self.assertIn(coords,
-                              ([self.test_ev1.x, self.test_ev1.y], [self.test_ev2.x, self.test_ev2.y]))
+                              ([self.test_ev1.x, self.test_ev1.y],
+                               [self.test_ev2.x, self.test_ev2.y]))
                 self.assertEqual(kwargs['text'], "testi teksti")
 
             i += 1
 
     def test_2_user_cannot_see_others_dwgs(self):
         # this is a completely new user who has no drawings
-        self.backend.login_register("user2", "user2")
+        user_mgr.login_register("user2", "user2", lambda: "user2")
 
         # user1 has 1 dwg in the DB at this point, but user2 shall not see it
-        self.assertEqual(len(self.backend.get_user_dwgs()), 0)
-
-
-# funny, this will not cleanUp if a test fails...
-unittest.addModuleCleanup(lambda: os.unlink(TEST_DB))
+        self.assertEqual(len(dwg_mgr.get_user_dwgs(
+            user_mgr.get_curr_user().name)), 0)

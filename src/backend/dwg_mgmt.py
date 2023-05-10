@@ -9,6 +9,7 @@ OVAL = 1
 LINE = 2
 TEXT = 3
 
+
 class DrawingManager:
     def __init__(self):
         """path can be overridden for testing purposes, e.g. ':memory:'"""
@@ -25,7 +26,7 @@ class DrawingManager:
         self._canv_hist = None
         self._undo_btn_setter = None
 
-    def get_user_dwgs(self, user_id):
+    def get_user_dwgs(self, user_id: int):
         return [
             Drawing(name, width, height, dwg_id, json.loads(content))
             for name, width, height, dwg_id, content

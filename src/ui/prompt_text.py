@@ -4,8 +4,7 @@ from tkinter import Toplevel, StringVar, Label, Entry, Button
 class PromptText(Toplevel):
     """basic input box for random text inputs"""
 
-    def __init__(self, master, title: str, kwlabel: dict, kwentry:dict, kwbutton:dict):
-
+    def __init__(self, master, title: str, kwlabel: dict, kwentry: dict, kwbutton: dict):
 
         super().__init__(master)
         self.title(title)

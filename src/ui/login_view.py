@@ -71,9 +71,8 @@ class LoginView(View):
 
     def pw_confirmation(self):
         return PromptText(self._master,
-            f'Registering {self._user.get()}',
-            {'text': 'repeat password: '},
-            {'show': '*'},
-            {'text': 'Confirm user creation'}
-            ).get()
-
+                          f'Registering {self._user.get()}',
+                          {'text': 'repeat password: '},
+                          {'show': '*'},
+                          {'text': 'Confirm user creation'}
+                          ).get()

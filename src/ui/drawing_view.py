@@ -4,7 +4,6 @@ from ui.prompt_text import PromptText
 from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 
 
-
 class DrawingView(View):
     """the main drawing view"""
 
@@ -97,7 +96,7 @@ class DrawingView(View):
         dwg_mgr.set_text_prompter(self.prompt_text)
 
         # add extra controls/functionalities
-        #if self._curr_user.teacher:
+        # if self._curr_user.teacher:
         #    pass
 
     def _save_and_exit(self):
@@ -114,10 +113,10 @@ class DrawingView(View):
         """
 
         return PromptText(self._frame,
-            'Text to add',
-            {'text': 'text:'},
-            {},
-            {'text': 'Add text'}).get()
+                          'Text to add',
+                          {'text': 'text:'},
+                          {},
+                          {'text': 'Add text'}).get()
 
     def _undo(self):
         """pushes the last feature from the drawing to the undo stack"""

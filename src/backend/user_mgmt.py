@@ -2,8 +2,10 @@ import hashlib
 from entities.user import User
 from backend.database import db
 
+
 class WrongPassword(Exception):
     pass
+
 
 class UserManager:
     """Handles authentication"""
@@ -15,16 +17,16 @@ class UserManager:
         self._conn = db
 
     def login_register(self,
-        username: str,
-        password: str,
-        pw_conf: callable,
-        teacher: bool = False):
+                       username: str,
+                       password: str,
+                       pw_conf: callable = None,  # simplifies testing
+                       teacher: bool = False):
         """Unified method to login/register users
 
         Args:
             username (str)
-            password (str): passed as plain text
-            pw_conf (callable): used upon registration
+            password (str): passed as plain text, hashing happens within this method
+            pw_conf (callable, optional): used only upon registration
             teacher (bool, optional): for future reference
 
         Returns:
@@ -53,7 +55,7 @@ class UserManager:
 
         # user does not exist, registering here
         else:
-            if password != pw_conf():
+            if pw_conf and password != pw_conf():
                 raise WrongPassword
 
             user_id = self._conn.execute(
@@ -71,5 +73,6 @@ class UserManager:
         """retreives the currently logged in user"""
 
         return self._curr_user
+
 
 user_mgr = UserManager()

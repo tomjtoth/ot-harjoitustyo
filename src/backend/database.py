@@ -1,4 +1,6 @@
 import sqlite3
+import os
+
 
 class Database:
     def __init__(self, path: str = "backend.db"):
@@ -44,10 +46,11 @@ class Database:
 
         return cur.lastrowid
 
-    def fetchone(self, sql:str, params: tuple):
+    def fetchone(self, sql: str, params: tuple):
         return self._conn.execute(sql, params).fetchone()
 
-    def fetchall(self, sql:str, params: tuple):
+    def fetchall(self, sql: str, params: tuple):
         return self._conn.execute(sql, params).fetchall()
 
-db = Database()
+
+db = Database(':memory:') if os.environ.get("TESTING") else Database()

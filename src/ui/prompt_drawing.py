@@ -1,4 +1,4 @@
-from tkinter import Toplevel, StringVar, IntVar, Label, Entry, Button, messagebox
+from tkinter import Toplevel, StringVar, IntVar, Label, Entry, Button, messagebox, TclError
 
 
 class PromptDrawing(Toplevel):
@@ -41,13 +41,15 @@ class PromptDrawing(Toplevel):
 
     def _validate(self):
         if self._title.get() == "":
-            messagebox.showerror("wrong input", "empty title's are not allowed")
+            messagebox.showerror(
+                "wrong input", "empty title's are not allowed")
             self.lift()
             return
         try:
-            int(self._width.get())
-            int(self._height.get())
+            int(self._width.get() or 0)
+            int(self._height.get() or 0)
             self.destroy()
-        except:
-            messagebox.showerror("wrong input", "width and height should be integer values")
+        except TclError:
+            messagebox.showerror(
+                "wrong input", "width and height should be integer values")
             self.lift()
