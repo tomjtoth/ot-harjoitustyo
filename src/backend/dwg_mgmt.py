@@ -11,8 +11,12 @@ TEXT = 3
 
 
 class DrawingManager:
+    """Manages changes to tkinter.Canvas and the log (drawing)
+    """
+
     def __init__(self):
-        """path can be overridden for testing purposes, e.g. ':memory:'"""
+        """Creates the manager
+        """
         self._conn = db
         self._curr_dwg = None
 
@@ -26,7 +30,9 @@ class DrawingManager:
         self._canv_hist = None
         self._undo_btn_setter = None
 
-    def get_user_dwgs(self, user_id: int):
+    def get_user_dwgs(self, user_id: int) -> list:
+        """Retrieves all drawings of the user as a list
+        """
         return [
             Drawing(name, width, height, dwg_id, json.loads(content))
             for name, width, height, dwg_id, content
@@ -38,8 +44,8 @@ class DrawingManager:
         ]
 
     def save_curr_dwg(self):
-        """stores python's Drawing's content to SQLite in JSON"""
-
+        """Dumps the log (drawing contents) as JSON to SQLite
+        """
         # existing drawing
         if self._curr_dwg.id:
             self._conn.execute("""
@@ -65,18 +71,19 @@ class DrawingManager:
                 self._curr_dwg.stringify()
             ))
 
-    def get_curr_dwg(self):
-        """gets the current drawing"""
+    def get_curr_dwg(self) -> Drawing:
+        """Gets the current drawing
+        """
         return self._curr_dwg
 
     def set_curr_dwg(self, dwg: Drawing):
-        """assigns the current drawing to backend"""
-
+        """Assigns the current drawing to dwg_mgr
+        """
         self._curr_dwg = dwg
 
     def set_canvas(self, canvas, undo_btn_setter: callable):
-        """assigns the current canvas to backend"""
-
+        """Assigns the current canvas to dwg_mgr, also re-draws the current drawing
+        """
         self._canvas = canvas
         self._canv_hist = []
         self._undo_btn_setter = undo_btn_setter
@@ -84,27 +91,27 @@ class DrawingManager:
             self._draw(feature, *coords, logging=False, **kwargs)
 
     def set_cmd(self, cmd: int):
-        """sets the currently initiated command"""
-
+        """Sets the currently initiated command
+        """
         self._curr_cmd = cmd
 
     def set_text_prompter(self, prompt: callable):
-        """Makes backend able to call a pop-up window for querying the text"""
-
+        """Makes backend able to call a pop-up window for querying the text
+        """
         self._text_prompter = prompt
 
     def set_fill(self, color: str):
-        """sets the fill color"""
-
+        """Sets the fill color for next features
+        """
         self._curr_fill = color
 
     def set_border(self, color: str):
-        """sets the border color"""
-
+        """Sets the border color for next features
+        """
         self._curr_border = color
 
     def _draw(self, cmd: int, *args, logging: bool = True, **kwargs):
-        """creates features on the current canvas + stores recipie in drawing's log
+        """Creates features on the canvas + stores recipie in drawing's log
 
         Args:
             cmd (int): can be one of RECTANGLE, OVAL, LINE, TEXT
@@ -132,13 +139,12 @@ class DrawingManager:
             self._undo_btn_setter()
             self._curr_dwg.clear_undo_stack()
 
-    # placeholder atm
-
     def b1_dn(self, event):
-        """left button pressed"""
+        """Left mouse button pressed
+        """
 
     def b1_up(self, event, test_helper: str = None):
-        """triggered when the user releases mouse button 1
+        """Left mouse button released
 
         Args:
             event (tkinter event): X and Y coords are used
@@ -171,10 +177,11 @@ class DrawingManager:
 
     # jatkokehari?
     def b1_mv(self, event):
-        """dragged while left button pressed"""
+        """Dragged while left mouse button is pressed
+        """
 
     def undo(self):
-        """moves 1 feature from the contents of the dwg to the undo stack
+        """Moves 1 feature from the contents of the dwg to the undo stack
 
         Returns:
             bool: True if there's more feaure in the dwg
@@ -189,7 +196,7 @@ class DrawingManager:
             return False
 
     def redo(self):
-        """moves 1 feature from the undo stack to the contents of the dwg
+        """Moves 1 feature from the undo stack to the contents of the dwg
 
         Returns:
             bool: True if there's more on the undo stack, else False
@@ -203,5 +210,4 @@ class DrawingManager:
             return False
 
 
-# exporting this one here
 dwg_mgr = DrawingManager()

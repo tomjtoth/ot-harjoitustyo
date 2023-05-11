@@ -5,19 +5,23 @@ from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 
 
 class DrawingView(View):
-    """the main drawing view"""
+    """3rd main view, used for adding features to the dwg
+    """
 
     def __init__(self, master, menu_view: callable):
-        """creates the main drawing view"""
-
+        """Creates the main dwg view
+        """
         super().__init__(master, None, menu_view)
         self._curr_dwg = dwg_mgr.get_curr_dwg()
         self._rows = 5
         self._create_widgets()
 
     def _add_clr_btn(self, color: str):
-        """adds a button for border and a button for fill"""
+        """Adds colored buttons for border and filling separately
 
+        Args:
+            color (str): could be anything tkinter knows
+        """
         Button(self._frame, bg=color,
                command=lambda: dwg_mgr.set_border(color),
                activebackground=color,
@@ -31,8 +35,8 @@ class DrawingView(View):
         self._rows += 1
 
     def _create_widgets(self):
-        """creates all the GUI controls"""
-
+        """Populates the widgets in the view
+        """
         Button(self._frame, text="Save and Exit",
                command=self._save_and_exit
                ).grid(columnspan=2)
@@ -71,10 +75,6 @@ class DrawingView(View):
         for color in "black white red green blue yellow purple gray brown pink orange lime".split():
             self._add_clr_btn(color)
 
-        # ehkä jatkokehitykseen...
-        # Button(self._frame, text="custom").grid(column=0, row=10)
-        # Button(self._frame, text="custom").grid(column=1, row=10)
-
         canv = Canvas(
             self._frame,
             width=self._curr_dwg.width,
@@ -86,7 +86,6 @@ class DrawingView(View):
         dwg_mgr.set_border("red")
         dwg_mgr.set_fill("green")
 
-        # separating app logic from UI here (?)
         self._master.title(f"Art + {self._curr_dwg.name}")
         dwg_mgr.set_canvas(canv, self.undo_btn_enabler)
         canv.bind("<Button-1>", dwg_mgr.b1_dn)
@@ -95,23 +94,19 @@ class DrawingView(View):
 
         dwg_mgr.set_text_prompter(self.prompt_text)
 
-        # add extra controls/functionalities
-        # if self._curr_user.teacher:
-        #    pass
-
     def _save_and_exit(self):
-        """Saves the current drawing to database"""
-
+        """Saves the current drawing to database and changes view
+        """
         self._master.title("Art +")
         dwg_mgr.save_curr_dwg()
         self._handle_prev()
 
     def prompt_text(self):
-        """
-            makes dwg_mgr able to create a pop-up window
-            and prompt the user for text input
-        """
+        """Prompts the user for input
 
+        Returns:
+            str: the user input
+        """
         return PromptText(self._frame,
                           "Text to add",
                           {"text": "text:"},
@@ -119,19 +114,22 @@ class DrawingView(View):
                           {"text": "Add text"}).get()
 
     def _undo(self):
-        """pushes the last feature from the drawing to the undo stack"""
+        """Moves the last feature from dwg to undo stack, also sets button states
+        """
         if dwg_mgr.undo():
             self._redo_btn["state"] = NORMAL
         else:
             self._undo_btn["state"] = DISABLED
 
     def _redo(self):
-        """pushes 1 feature from undo stack to the drawing"""
+        """Moves the last feature from the undo stack to the dwg, also sets button states
+        """
         if dwg_mgr.redo():
             self._undo_btn["state"] = NORMAL
         else:
             self._redo_btn["state"] = DISABLED
 
     def undo_btn_enabler(self):
-        """Makes dwg_mgr able to enable the undo button"""
+        """dwg_mgr calls this to set the button state upon adding features
+        """
         self._undo_btn["state"] = NORMAL

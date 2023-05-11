@@ -7,19 +7,20 @@ from backend.user_mgmt import user_mgr, WrongPassword
 
 
 class LoginView(View):
-    """Makes logging in possible via GUI"""
+    """1st view, used for authentication
+    """
 
     def __init__(self, master, menu_view: callable):
-        """creates the view"""
-
+        """Creates the view
+        """
         super().__init__(master, menu_view, master.quit)
         self._create_widgets()
         self._re_user = re.compile(r"^[a-zA-Z_]\w{2,}$")
         self._re_pass = re.compile(r"^\w{8,16}$")
 
     def _create_widgets(self):
-        """populates the widgets in the view"""
-
+        """Populates the widgets in the view
+        """
         Label(self._frame, text="username:").grid(
             row=0, column=0, sticky=W, pady=2)
         self._user = Entry(self._frame)
@@ -38,8 +39,8 @@ class LoginView(View):
                command=self._handle_prev).grid(columnspan=2)
 
     def _process_input(self):
-        """tries logging in by getting the content of entries"""
-
+        """Checking user input and trying to log in
+        """
         username = self._user.get()
         password = self._pass.get()
 
@@ -66,10 +67,15 @@ class LoginView(View):
             user_mgr.login_register(username, password, self.pw_confirmation)
             self._handle_next()
 
-        except WrongPassword:
-            messagebox.showerror("Login/register failed", "wrong password")
+        except WrongPassword as err:
+            messagebox.showerror(*err.args)
 
     def pw_confirmation(self):
+        """dwg_mgr forces the user to re-type the pw again upon registration
+
+        Returns:
+            str: the user password
+        """
         return PromptText(self._master,
                           f"Registering {self._user.get()}",
                           {"text": "repeat password: "},

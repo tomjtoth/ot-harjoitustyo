@@ -7,18 +7,19 @@ from entities.drawing import Drawing
 
 
 class MenuView(View):
-    """shows a list of drawings available to the user"""
+    """2nd view, shows drawings of given user
+    """
 
     def __init__(self, master, drawing_view: callable, login_view: callable):
-        """creates the main menu view"""
-
+        """Creates the menu view
+        """
         super().__init__(master, drawing_view, login_view)
         self._user = user_mgr.get_curr_user()
         self._create_widgets()
 
     def _create_widgets(self):
-        """internal func, creates all the GUI controls"""
-
+        """Populates the widgets in the view
+        """
         Button(self._frame, text=f"Logout ({self._user.name})",
                command=self._handle_prev).grid()
 
@@ -47,13 +48,12 @@ class MenuView(View):
             pass
 
     def _proceed_to_next_view(self):
-        """sets up a new or old drawing and proceeds to drawing view"""
-
+        """Additional preparations for the DrawingView
+        """
         dwg_i = self._lb_dwg.curselection()[0]
 
         if dwg_i == 0:
-            pop_up = PromptDrawing(self._frame)
-            name, width, height = pop_up.process()
+            name, width, height = PromptDrawing(self._frame).get()
             dwg_mgr.set_curr_dwg(Drawing(name, width, height))
         else:
             dwg_mgr.set_curr_dwg(self._dwgs[dwg_i-1])

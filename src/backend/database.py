@@ -1,16 +1,26 @@
 import sqlite3
 import os
 
+# TODO: get rid of wrappers and rebase Database(SQLite.connection) somehow
+
 
 class Database:
+    """Connection to the backend
+    """
+
     def __init__(self, path: str):
+        """Creates the connection
+
+        Args:
+            path (str): ':memory:' is used during testing
+        """
         self._conn = sqlite3.connect(path)
         self._conn.isolation_level = None
         self._create_scheme()
 
     def _create_scheme(self):
-        """creating scheme on 1st run, no-op later.."""
-
+        """Creates tables in DB if they don't exist already
+        """
         self._conn.executescript("""
         create table if not exists users(
             id integer primary key,
@@ -40,16 +50,42 @@ class Database:
         );
         """)
 
-    def execute(self, sql: str, params: tuple):
+    def execute(self, sql: str, params: tuple) -> int:
+        """wrapper for sqlite.conn.execute
+
+        Args:
+            sql (str): SQL to execute
+            params (tuple): positional parameters
+
+        Returns:
+            int: last row ID
+        """
         cur = self._conn.cursor()
         cur.execute(sql, params)
-
         return cur.lastrowid
 
-    def fetchone(self, sql: str, params: tuple):
+    def fetchone(self, sql: str, params: tuple) -> tuple:
+        """wrapper for sqlite.conn.fetchone
+
+        Args:
+            sql (str): SQL to execute
+            params (tuple): positional parameters
+
+        Returns:
+            tuple: one row for the query
+        """
         return self._conn.execute(sql, params).fetchone()
 
-    def fetchall(self, sql: str, params: tuple):
+    def fetchall(self, sql: str, params: tuple) -> tuple:
+        """wrapper for sqlite.conn.fetchall
+
+        Args:
+            sql (str): SQL to execute
+            params (tuple): positional parameters
+
+        Returns:
+            tuple: all rowse for the query
+        """
         return self._conn.execute(sql, params).fetchall()
 
 

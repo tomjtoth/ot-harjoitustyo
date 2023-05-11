@@ -1,11 +1,11 @@
-from entities.drawing import Drawing
-from backend.user_mgmt import user_mgr, WrongPassword
-from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 import unittest
 import os
 
 os.environ.setdefault("TESTING", "setting this here for Backend")
 
+from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
+from backend.user_mgmt import user_mgr, WrongPassword
+from entities.drawing import Drawing
 
 # needed because these tests build on top of each other, test order is strict
 unittest.TestLoader.sortTestMethodsUsing = None

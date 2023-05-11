@@ -4,15 +4,20 @@ from backend.database import db
 
 
 class WrongPassword(Exception):
-    pass
+    """Thrown when authentication fails
+
+    Args:
+        list: title and message to show
+    """
 
 
 class UserManager:
-    """Handles authentication"""
+    """Handles authentication
+    """
 
     def __init__(self):
-        """Constructor"""
-
+        """Creates the manager
+        """
         self._curr_user = None
         self._conn = db
 
@@ -46,17 +51,16 @@ class UserManager:
 
         # user exists
         if db_res:
-
             if pw_hash != db_res[1]:
-                raise WrongPassword
-
+                raise WrongPassword("Login failed", "Wrong password")
             user_id = db_res[0]
             teacher = bool(db_res[2])
 
         # user does not exist, registering here
         else:
             if pw_conf and password != pw_conf():
-                raise WrongPassword
+                raise WrongPassword("Registration failed",
+                                    "Passwords don't match")
 
             user_id = self._conn.execute(
                 "insert into users(username, password) values (?, ?)",
@@ -66,12 +70,11 @@ class UserManager:
                 self._conn.execute(
                     "insert into teachers values(?)", (user_id, ))
 
-        # either login or register succeeded
         self._curr_user = User(user_id, username, teacher)
 
     def get_curr_user(self):
-        """retreives the currently logged in user"""
-
+        """Retreives the currently logged in user
+        """
         return self._curr_user
 
 

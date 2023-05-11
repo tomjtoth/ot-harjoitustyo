@@ -9,9 +9,8 @@ class PromptDrawing(Toplevel):
         super().__init__(master)
         self.title("New DWG")
         self.resizable(False, False)
-        # self.grab_set()
-
         self._title = StringVar(value="uusi")
+
         Label(self, text="name:").grid(column=0, row=0)
         entr_t = Entry(self, textvariable=self._title)
         entr_t.grid(column=1, row=0)
@@ -33,21 +32,23 @@ class PromptDrawing(Toplevel):
         Button(self, text="Create", command=self._validate
                ).grid(columnspan=2, row=3)
 
-    def process(self):
-        """helper method for setting up a new drawing"""
-
+    def get(self):
+        """Waits for user input and returns it
+        """
         self.wait_window()
         return self._title.get(), self._width.get(), self._height.get()
 
     def _validate(self):
+        """Sanity checks for empty title and unconvertable integers
+        """
         if self._title.get() == "":
             messagebox.showerror(
                 "wrong input", "empty title's are not allowed")
             self.lift()
             return
         try:
-            int(self._width.get() or 0)
-            int(self._height.get() or 0)
+            int(self._width.get())
+            int(self._height.get())
             self.destroy()
         except TclError:
             messagebox.showerror(

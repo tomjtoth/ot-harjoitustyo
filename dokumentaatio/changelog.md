@@ -31,6 +31,8 @@
 - tests at 80%
 
 ## Viikko 7
+- backend split into 3 smaller modules
 - added pw confirmation pop-up
 - added checks for new drawing's attributes
-
+- GUI impros
+- docstrings revisited

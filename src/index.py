@@ -5,8 +5,8 @@ from ui.ui import Ui
 
 
 def main():
-    """entry point for the application"""
-
+    """Entry point for the application
+    """
     tk_window = Tk()
     tk_window.title("Art +")
     tk_window.resizable(False, False)

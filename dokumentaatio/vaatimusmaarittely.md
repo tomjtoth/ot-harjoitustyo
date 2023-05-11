@@ -40,6 +40,7 @@ Sovelluksessa tulee olemaan alla näkymät:
 Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 
 - [ ] erillinen register näkymä, alussa meen vaan user:pass siinä login näkymässä..
+  - [X] partially finished with pop-up for password confirmation
 - [ ] drag n drop toiminta eri SVG feature -eille
   - [ ] esim neliö/ympyrä raahattava hiirellä
 - [ ] template:in toteutus
