@@ -37,3 +37,4 @@
 - GUI impros
 - docstrings revisited
 - preview for to-be-added feature included (mouse1 dragging)
+- removed class Database (KISS)

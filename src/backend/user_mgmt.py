@@ -1,6 +1,6 @@
 import hashlib
 from entities.user import User
-from backend.database import db
+from backend.database import conn
 
 
 class WrongPassword(Exception):
@@ -19,7 +19,7 @@ class UserManager:
         """Creates the manager
         """
         self._curr_user = None
-        self._conn = db
+        self._conn = conn
 
     def login_register(self,
                        username: str,
@@ -43,11 +43,11 @@ class UserManager:
 
         # storing pw as md5sum BAD IDEA!!!!
         pw_hash = hashlib.md5(password.encode("utf-8")).hexdigest()
-        db_res = self._conn.fetchone("""
+        db_res = self._conn.execute("""
         select u.id, password, iif(t.user_id, 1, 0) as role
         from users u
         left join teachers t on t.user_id == u.id
-        where username=?""", (username, ))
+        where username=?""", (username, )).fetchone()
 
         # user exists
         if db_res:
@@ -62,9 +62,10 @@ class UserManager:
                 raise WrongPassword("Registration failed",
                                     "Passwords don't match")
 
-            user_id = self._conn.execute(
+            cur = self._conn.cursor()
+            user_id = cur.execute(
                 "insert into users(username, password) values (?, ?)",
-                (username, pw_hash))
+                (username, pw_hash)).lastrowid
 
             if teacher:
                 self._conn.execute(

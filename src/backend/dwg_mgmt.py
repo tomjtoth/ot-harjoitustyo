@@ -1,6 +1,6 @@
 import json
 from entities.drawing import Drawing, EmptyStackError
-from backend.database import db
+from backend.database import conn
 from backend.user_mgmt import user_mgr
 
 RECTANGLE = 0
@@ -16,7 +16,7 @@ class DrawingManager:
     def __init__(self):
         """Creates the manager
         """
-        self._conn = db
+        self._conn = conn
         self._curr_dwg = None
 
         self._clicks = 0
@@ -36,11 +36,11 @@ class DrawingManager:
         return [
             Drawing(name, width, height, dwg_id, json.loads(content))
             for name, width, height, dwg_id, content
-            in self._conn.fetchall("""
+            in self._conn.execute("""
             select name, width, height, id, content
             from drawings d
             where owner_id=?
-            """, (user_id, ))
+            """, (user_id, )).fetchall()
         ]
 
     def save_curr_dwg(self):
