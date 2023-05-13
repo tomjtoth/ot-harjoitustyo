@@ -5,8 +5,8 @@ from entities.drawing import Drawing, EmptyStackError
 # TESTING must be set before importing either user_mgr or dwg_mgr
 os.environ.setdefault("TESTING", "setting this here for Backend")
 
-from backend.user_mgmt import user_mgr, WrongPassword
 from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
+from backend.user_mgmt import user_mgr, WrongPassword
 
 # needed because these tests build on top of each other, test order is strict
 unittest.TestLoader.sortTestMethodsUsing = None
@@ -82,13 +82,16 @@ class TestDrawing(unittest.TestCase):
             (RECTANGLE, "green", "yellow"),
             (LINE, "blue", "gray"),
             (TEXT, "red", "white"))
-        self.test_ev1 = DummyEvent(20, 20)
-        self.test_ev2 = DummyEvent(100, 100)
+        self.test_evs = [DummyEvent(x, x) for x in (20, 40, 60, 80, 100)]
+        self.title, self.width, self.height = "4 features at 20,20,100,100", 640, 480
 
     def test_0_save_new_dwg_complex(self):
-        dwg_mgr.set_curr_dwg(
-            Drawing("4 features at 20,20,100,100", 640, 480))
+        dwg = Drawing(self.title, self.width, self.height)
+        dwg_mgr.set_curr_dwg(dwg)
         dwg_mgr.set_canvas(DummyCanvas(), dummy_callback)
+        dwg_mgr.set_text_prompter(lambda: None)
+
+        self.assertEqual(dwg, dwg_mgr.get_curr_dwg())
 
         # adding 4 features
         for (cmd, fill, border) in self.test_features:
@@ -98,10 +101,13 @@ class TestDrawing(unittest.TestCase):
 
             # emulate user clicks
             if cmd == TEXT:
-                dwg_mgr.b1_up(self.test_ev2, "testi teksti")
+                dwg_mgr.b1_up(self.test_evs[4], "testi teksti")
             else:
-                dwg_mgr.b1_dn(self.test_ev1)
-                dwg_mgr.b1_up(self.test_ev2)
+                dwg_mgr.b1_dn(self.test_evs[0])
+                dwg_mgr.b1_mv(self.test_evs[1])
+                dwg_mgr.b1_mv(self.test_evs[2])
+                dwg_mgr.b1_mv(self.test_evs[3])
+                dwg_mgr.b1_up(self.test_evs[4])
 
         dwg_mgr.save_curr_dwg()
 
@@ -109,23 +115,18 @@ class TestDrawing(unittest.TestCase):
         dwg = dwg_mgr.get_user_dwgs(user_mgr.get_curr_user().id)[0]
 
         self.assertTupleEqual(
-            ("4 features at 20,20,100,100", 640, 480),
+            (self.title, self.width, self.height),
             (dwg.name, dwg.width, dwg.height))
 
-        i = 0
-        for (cmd, coords, kwargs) in dwg.reproduce():
-            # 1 color for LINE, 2 colors for the other 3 features
-            if i < 4:
-                # the last TEXT in the self.test_features actually creates 2 entries
-                orig_cmd, *orig_clrs = self.test_features[i]
-
+        for i, (cmd, coords, kwargs) in enumerate(dwg.reproduce()):
+            orig_cmd, *orig_clrs = self.test_features[i]
             self.assertEqual(cmd, orig_cmd)
 
             # OVAL, RECTANGLE, LINE
             if len(coords) == 4:
                 self.assertListEqual(coords,
-                                     [self.test_ev1.x, self.test_ev1.y,
-                                      self.test_ev2.x, self.test_ev2.y])
+                                     [self.test_evs[0].x, self.test_evs[0].y,
+                                      self.test_evs[4].x, self.test_evs[4].y])
 
                 if cmd == LINE:
                     self.assertDictEqual(kwargs,
@@ -139,11 +140,9 @@ class TestDrawing(unittest.TestCase):
             # TEXT
             else:
                 self.assertIn(coords,
-                              ([self.test_ev1.x, self.test_ev1.y],
-                               [self.test_ev2.x, self.test_ev2.y]))
+                              ([self.test_evs[0].x, self.test_evs[0].y],
+                               [self.test_evs[4].x, self.test_evs[4].y]))
                 self.assertEqual(kwargs["text"], "testi teksti")
-
-            i += 1
 
     def test_2_user_cannot_see_others_dwgs(self):
         # this is a completely new user who has no drawings
@@ -155,12 +154,23 @@ class TestDrawing(unittest.TestCase):
 
     def test_3_dwg_undo_redo_works(self):
         dwg = dwg_mgr.get_user_dwgs(user_mgr.get_curr_user().id)[0]
+        dwg_mgr.set_curr_dwg(dwg)
         dwg_mgr.set_canvas(DummyCanvas(), dummy_callback)
 
         for _ in range(len(self.test_features)-1):
             self.assertTrue(dwg_mgr.undo())
+
+        # 1 on stack, remains 0 -> False
         self.assertFalse(dwg_mgr.undo())
+        # 0 on stack -> False
+        self.assertFalse(dwg_mgr.undo())
+        self.assertRaises(EmptyStackError, dwg.undo)
 
         for _ in range(len(self.test_features)-1):
             self.assertTrue(dwg_mgr.redo())
+
+        # 1 on stack, remains 0 -> False
         self.assertFalse(dwg_mgr.redo())
+        # 0 on stack -> False
+        self.assertFalse(dwg_mgr.redo())
+        self.assertRaises(EmptyStackError, dwg.redo)
