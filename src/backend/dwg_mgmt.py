@@ -123,12 +123,12 @@ class DrawingManager:
 
         if not kwargs:
             kwargs = {
-                "fill":self._curr_fill,
-                "width":10}
+                "fill": self._curr_fill,
+                "width": 10}
 
             if cmd in (OVAL, RECTANGLE):
-                kwargs["outline"]=self._curr_border
-                
+                kwargs["outline"] = self._curr_border
+
         if cmd == RECTANGLE:
             feature = self._canvas.create_rectangle(*coords, **kwargs)
 
@@ -145,7 +145,7 @@ class DrawingManager:
             self._curr_dwg.add(cmd, *coords, **kwargs)
             self._btn_state_setter()
             self._curr_dwg.clear_undo_stack()
-        
+
         return feature
 
     def b1_dn(self, event):
@@ -167,7 +167,8 @@ class DrawingManager:
             self._canvas.delete(self._preview)
 
         if self._curr_cmd != TEXT:
-            self._preview = self._draw(self._curr_cmd, *self._coords, event.x, event.y)
+            self._preview = self._draw(
+                self._curr_cmd, *self._coords, event.x, event.y)
 
     def b1_up(self, event, test_helper: str = None):
         """Adding feature at mouse pos
@@ -186,7 +187,8 @@ class DrawingManager:
                 fill=self._curr_fill))
 
         else:
-            self._canv_hist.append(self._draw(self._curr_cmd, *self._coords, event.x, event.y, logging=True))
+            self._canv_hist.append(self._draw(
+                self._curr_cmd, *self._coords, event.x, event.y, logging=True))
 
         self._coords = None
 
@@ -217,7 +219,8 @@ class DrawingManager:
         """
         try:
             (cmd, coords, kwargs), state = self._curr_dwg.redo()
-            self._canv_hist.append(self._draw(cmd, *coords, logging=False, **kwargs))
+            self._canv_hist.append(self._draw(
+                cmd, *coords, logging=False, **kwargs))
             return state
 
         except EmptyStackError:

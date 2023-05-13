@@ -1,12 +1,12 @@
 import unittest
 import os
-from entities.drawing import Drawing
+from entities.drawing import Drawing, EmptyStackError
 
 # TESTING must be set before importing either user_mgr or dwg_mgr
 os.environ.setdefault("TESTING", "setting this here for Backend")
 
-from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 from backend.user_mgmt import user_mgr, WrongPassword
+from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 
 # needed because these tests build on top of each other, test order is strict
 unittest.TestLoader.sortTestMethodsUsing = None
@@ -41,6 +41,9 @@ class DummyCanvas:
         pass
 
     def create_text(self, *args, **kwargs):
+        pass
+
+    def delete(self, obj):
         pass
 
 
@@ -151,4 +154,13 @@ class TestDrawing(unittest.TestCase):
             user_mgr.get_curr_user().name)), 0)
 
     def test_3_dwg_undo_redo_works(self):
-        pass
+        dwg = dwg_mgr.get_user_dwgs(user_mgr.get_curr_user().id)[0]
+        dwg_mgr.set_canvas(DummyCanvas(), dummy_callback)
+
+        for _ in range(len(self.test_features)-1):
+            self.assertTrue(dwg_mgr.undo())
+        self.assertFalse(dwg_mgr.undo())
+
+        for _ in range(len(self.test_features)-1):
+            self.assertTrue(dwg_mgr.redo())
+        self.assertFalse(dwg_mgr.redo())
