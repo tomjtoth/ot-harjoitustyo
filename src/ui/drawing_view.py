@@ -1,5 +1,5 @@
 from tkinter import Button, Label, Canvas, Radiobutton, IntVar, DISABLED, NORMAL
-from ui.common import View
+from ui.common import View, TITLE
 from ui.prompt_text import PromptText
 from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 
@@ -86,8 +86,8 @@ class DrawingView(View):
         dwg_mgr.set_border("red")
         dwg_mgr.set_fill("green")
 
-        self._master.title(f"Art + {self._curr_dwg.name}")
-        dwg_mgr.set_canvas(canv, self.undo_btn_enabler)
+        self._master.title(f"{TITLE} {self._curr_dwg.name}")
+        dwg_mgr.set_canvas(canv, self.btn_state_setter)
         canv.bind("<Button-1>", dwg_mgr.b1_dn)
         canv.bind("<B1-Motion>", dwg_mgr.b1_mv)
         canv.bind("<B1-ButtonRelease>", dwg_mgr.b1_up)
@@ -97,7 +97,7 @@ class DrawingView(View):
     def _save_and_exit(self):
         """Saves the current drawing to database and changes view
         """
-        self._master.title("Art +")
+        self._master.title(TITLE)
         dwg_mgr.save_curr_dwg()
         self._handle_prev()
 
@@ -129,7 +129,8 @@ class DrawingView(View):
         else:
             self._redo_btn["state"] = DISABLED
 
-    def undo_btn_enabler(self):
+    def btn_state_setter(self):
         """dwg_mgr calls this to set the button state upon adding features
         """
         self._undo_btn["state"] = NORMAL
+        self._redo_btn["state"] = DISABLED

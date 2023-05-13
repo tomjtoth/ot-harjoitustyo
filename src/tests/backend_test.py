@@ -1,11 +1,12 @@
 import unittest
 import os
+from entities.drawing import Drawing
 
+# TESTING must be set before importing either user_mgr or dwg_mgr
 os.environ.setdefault("TESTING", "setting this here for Backend")
 
 from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 from backend.user_mgmt import user_mgr, WrongPassword
-from entities.drawing import Drawing
 
 # needed because these tests build on top of each other, test order is strict
 unittest.TestLoader.sortTestMethodsUsing = None
@@ -20,14 +21,14 @@ class DummyEvent:
 
 
 def dummy_callback():
-    """Backend._draw() spams the undo button into NORMAL state"""
+    """Backend._draw() spams the undo button into NORMAL state
+    """
 
 
 class DummyCanvas:
-    """
-        Backend._draw(...) heavily integrates with tkinter.Canvas
-        These methods are called during normal operation
-        I only need to check on the logging capability of my Drawing
+    """Backend._draw(...) heavily integrates with tkinter.Canvas
+       These methods are called during normal operation
+       I only need to check on the logging capability of my Drawing
     """
 
     def create_rectangle(self, *args, **kwargs):
@@ -96,7 +97,7 @@ class TestDrawing(unittest.TestCase):
             if cmd == TEXT:
                 dwg_mgr.b1_up(self.test_ev2, "testi teksti")
             else:
-                dwg_mgr.b1_up(self.test_ev1)
+                dwg_mgr.b1_dn(self.test_ev1)
                 dwg_mgr.b1_up(self.test_ev2)
 
         dwg_mgr.save_curr_dwg()
@@ -148,3 +149,6 @@ class TestDrawing(unittest.TestCase):
         # user1 has 1 dwg in the DB at this point, but user2 shall not see it
         self.assertEqual(len(dwg_mgr.get_user_dwgs(
             user_mgr.get_curr_user().name)), 0)
+
+    def test_3_dwg_undo_redo_works(self):
+        pass

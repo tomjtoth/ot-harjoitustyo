@@ -1,5 +1,4 @@
 import json
-from collections import deque
 from entities.drawing import Drawing, EmptyStackError
 from backend.database import db
 from backend.user_mgmt import user_mgr
@@ -25,10 +24,11 @@ class DrawingManager:
         self._text_prompter = None
         self._curr_fill = "red"
         self._curr_border = "green"
-        self._coords = deque()
+        self._coords = None
+        self._preview = None
         self._canvas = None
         self._canv_hist = None
-        self._undo_btn_setter = None
+        self._btn_state_setter = None
 
     def get_user_dwgs(self, user_id: int) -> list:
         """Retrieves all drawings of the user as a list
@@ -81,14 +81,14 @@ class DrawingManager:
         """
         self._curr_dwg = dwg
 
-    def set_canvas(self, canvas, undo_btn_setter: callable):
+    def set_canvas(self, canvas, btn_state_setter: callable):
         """Assigns the current canvas to dwg_mgr, also re-draws the current drawing
         """
         self._canvas = canvas
         self._canv_hist = []
-        self._undo_btn_setter = undo_btn_setter
+        self._btn_state_setter = btn_state_setter
         for (feature, coords, kwargs) in self._curr_dwg.reproduce():
-            self._draw(feature, *coords, logging=False, **kwargs)
+            self._canv_hist.append(self._draw(feature, *coords, **kwargs))
 
     def set_cmd(self, cmd: int):
         """Sets the currently initiated command
@@ -110,75 +110,89 @@ class DrawingManager:
         """
         self._curr_border = color
 
-    def _draw(self, cmd: int, *args, logging: bool = True, **kwargs):
-        """Creates features on the canvas + stores recipie in drawing's log
+    def _draw(self, cmd: int, *coords,  logging: bool = False, **kwargs):
+        """Adds a feature to the canvas and optionally logs it
 
         Args:
-            cmd (int): can be one of RECTANGLE, OVAL, LINE, TEXT
-            logging (bool, optional): whether the feature should be added to the persistent
-                                      storage or not. Defaults to True.
+            cmd (int): can be one ov RECTANGLE, OVAL, LINE, TEXT
+            logging (bool, optional): used only on direct user interaction. Defaults to False.
+
+        Returns:
+            tkinter.feature: a pointer to the last added feature
         """
+
+        if not kwargs:
+            kwargs = {
+                "fill":self._curr_fill,
+                "width":10}
+
+            if cmd in (OVAL, RECTANGLE):
+                kwargs["outline"]=self._curr_border
+                
         if cmd == RECTANGLE:
-            self._canv_hist.append(
-                self._canvas.create_rectangle(*args, **kwargs))
+            feature = self._canvas.create_rectangle(*coords, **kwargs)
 
         elif cmd == OVAL:
-            self._canv_hist.append(
-                self._canvas.create_oval(*args, **kwargs))
+            feature = self._canvas.create_oval(*coords, **kwargs)
 
         elif cmd == LINE:
-            self._canv_hist.append(
-                self._canvas.create_line(*args, **kwargs))
+            feature = self._canvas.create_line(*coords, **kwargs)
 
         elif cmd == TEXT:
-            self._canv_hist.append(
-                self._canvas.create_text(*args, **kwargs))
+            feature = self._canvas.create_text(*coords, **kwargs)
 
         if logging:
-            self._curr_dwg.add(cmd, *args, **kwargs)
-            self._undo_btn_setter()
+            self._curr_dwg.add(cmd, *coords, **kwargs)
+            self._btn_state_setter()
             self._curr_dwg.clear_undo_stack()
+        
+        return feature
 
     def b1_dn(self, event):
-        """Left mouse button pressed
-        """
-
-    def b1_up(self, event, test_helper: str = None):
-        """Left mouse button released
+        """Initiates drawing feature's preview
 
         Args:
-            event (tkinter event): X and Y coords are used
-            test_helper (str, optional): used during tests only. Defaults to None.
+            event (tkinter.event): mouse x,y are taken from here
         """
-        self._coords.append(event.x)
-        self._coords.append(event.y)
+        if self._curr_cmd != TEXT:
+            self._coords = (event.x, event.y)
 
-        # keeping track of only 2(x,y) coords
-        while len(self._coords) > 4:
-            self._coords.popleft()
+    def b1_mv(self, event):
+        """Drawing a preview of the feature to-be-added
+
+        Args:
+            event (tkinter.Event): mouse x,y are taken from here
+        """
+        if self._preview:
+            self._canvas.delete(self._preview)
+
+        if self._curr_cmd != TEXT:
+            self._preview = self._draw(self._curr_cmd, *self._coords, event.x, event.y)
+
+    def b1_up(self, event, test_helper: str = None):
+        """Adding feature at mouse pos
+
+        Args:
+            event (tkinter.event): mouse x,y are taken from here
+            test_helper (str, optional): used only during tests. Defaults to None.
+        """
 
         if self._curr_cmd == TEXT:
 
-            self._draw(self._curr_cmd, self._coords[-2], self._coords[-1],
-                       text=test_helper if test_helper else self._text_prompter(),
-                       fill=self._curr_fill)
+            self._canv_hist.append(self._draw(
+                self._curr_cmd, event.x, event.y,
+                logging=True,
+                text=test_helper if test_helper else self._text_prompter(),
+                fill=self._curr_fill))
 
         else:
-            self._clicks += 1
+            self._canv_hist.append(self._draw(self._curr_cmd, *self._coords, event.x, event.y, logging=True))
 
-            if self._clicks % 2 == 0:
+        self._coords = None
 
-                if self._curr_cmd == LINE:
-                    self._draw(self._curr_cmd, *self._coords,
-                               fill=self._curr_fill, width=10)
-                else:
-                    self._draw(self._curr_cmd, *self._coords,
-                               outline=self._curr_border, fill=self._curr_fill, width=10)
-
-    # jatkokehari?
-    def b1_mv(self, event):
-        """Dragged while left mouse button is pressed
-        """
+        if self._preview:
+            self._canvas.delete(self._preview)
+            self._preview = None
 
     def undo(self):
         """Moves 1 feature from the contents of the dwg to the undo stack
@@ -203,7 +217,7 @@ class DrawingManager:
         """
         try:
             (cmd, coords, kwargs), state = self._curr_dwg.redo()
-            self._draw(cmd, *coords, logging=False, **kwargs)
+            self._canv_hist.append(self._draw(cmd, *coords, logging=False, **kwargs))
             return state
 
         except EmptyStackError:

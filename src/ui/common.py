@@ -1,5 +1,6 @@
 from tkinter.ttk import Frame
 
+TITLE = "Art +"
 
 class View:
     """Common for all views

@@ -36,3 +36,4 @@
 - added checks for new drawing's attributes
 - GUI impros
 - docstrings revisited
+- preview for to-be-added feature included (mouse1 dragging)
