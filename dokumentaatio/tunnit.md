@@ -24,5 +24,5 @@
 | 9.5   | 2  | issue1 continued, GUI impros | %63
 | 10.5  | 3  | issue1 export unification (DISCARDED) | %66
 | 11.5  | 2  | docstrings, code cleanup | %68
-| 13.5  | 4  | m1 dragging, previewing feature added, tests, R.I.P. class Database | %72
-|       | 72 | total |
+| 13.5  | 6  | m1 dragging, previewing feature added, tests, R.I.P. class Database | %74
+|       | 74 | total |
