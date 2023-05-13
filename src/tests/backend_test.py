@@ -5,8 +5,9 @@ from entities.drawing import Drawing, EmptyStackError
 # TESTING must be set before importing either user_mgr or dwg_mgr
 os.environ.setdefault("TESTING", "setting this here for Backend")
 
-from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
+# pylint: disable=wrong-import-position
 from backend.user_mgmt import user_mgr, WrongPassword
+from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
 
 # needed because these tests build on top of each other, test order is strict
 unittest.TestLoader.sortTestMethodsUsing = None
@@ -31,17 +32,17 @@ class DummyCanvas:
        I only need to check on the logging capability of my Drawing
     """
 
-    def create_rectangle(self, *args, **kwargs):
-        pass
+    def create_rectangle(self, *_args, **_kwargs):
+        return 1
 
-    def create_oval(self, *args, **kwargs):
-        pass
+    def create_oval(self, *_args, **_kwargs):
+        return 1
 
-    def create_line(self, *args, **kwargs):
-        pass
+    def create_line(self, *_args, **_kwargs):
+        return 1
 
-    def create_text(self, *args, **kwargs):
-        pass
+    def create_text(self, *_args, **_kwargs):
+        return 1
 
     def delete(self, obj):
         pass
@@ -174,3 +175,6 @@ class TestDrawing(unittest.TestCase):
         # 0 on stack -> False
         self.assertFalse(dwg_mgr.redo())
         self.assertRaises(EmptyStackError, dwg.redo)
+
+        # saving already existing dwg here
+        dwg_mgr.save_curr_dwg()

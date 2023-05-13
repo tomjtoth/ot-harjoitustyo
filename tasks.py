@@ -23,7 +23,8 @@ def coverage_report(ctx):
 
 @task
 def format(ctx):
-    ctx.run("autopep8 --in-place --recursive src", pty=True)
+    # backend_test.py sets an envvar, autopep8 "fixed" the import order, hence testing reverted to PROD database instead of ":memory:" DEV
+    ctx.run("autopep8 --in-place --recursive --exclude *_test.py src", pty=True)
 
 
 @task
