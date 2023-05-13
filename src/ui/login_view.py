@@ -1,7 +1,7 @@
 import re
 from textwrap import dedent
 from tkinter import messagebox, Entry, Button, Label, W
-from ui.common import View
+from ui.common import View, TITLE
 from ui.prompt_text import PromptText
 from backend.user_mgmt import user_mgr, WrongPassword
 
@@ -17,6 +17,7 @@ class LoginView(View):
         self._create_widgets()
         self._re_user = re.compile(r"^[a-zA-Z_]\w{2,}$")
         self._re_pass = re.compile(r"^\w{8,16}$")
+        self._re_easter_egg = re.compile(f"^{TITLE}$")
 
     def _create_widgets(self):
         """Populates the widgets in the view
@@ -44,15 +45,16 @@ class LoginView(View):
         username = self._user.get()
         password = self._pass.get()
 
-        if not self._re_user.match(username):
-            messagebox.showerror(
-                "invalid username", dedent("""
-                usernames should:
-                - be more than 3 chars
-                - contain only chars from class [a-zA-Z0-9_]
-                - not begin with a digit [0-9]
-                """))
-            return
+        if not self._re_easter_egg.match(username):
+            if not self._re_user.match(username):
+                messagebox.showerror(
+                    "invalid username", dedent("""
+                    usernames should:
+                    - be more than 3 chars
+                    - contain only chars from class [a-zA-Z0-9_]
+                    - not begin with a digit [0-9]
+                    """))
+                return
 
         if not self._re_pass.match(password):
             messagebox.showerror(
@@ -65,6 +67,8 @@ class LoginView(View):
 
         try:
             user_mgr.login_register(username, password, self.pw_confirmation)
+            if self._re_easter_egg.match(username):
+                messagebox.showinfo("Yllätysmuna!", "Welcome Artist!")
             self._handle_next()
 
         except WrongPassword as err:
