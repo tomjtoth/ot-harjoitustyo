@@ -38,3 +38,5 @@
 - docstrings revisited
 - preview for to-be-added feature included (mouse1 dragging)
 - removed class Database (KISS)
+- tests broken to smaller pieces
+  - strict dependency of order, failed to fix it without introducing numbers in classnames...

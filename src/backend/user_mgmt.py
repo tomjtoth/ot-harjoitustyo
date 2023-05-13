@@ -24,14 +24,14 @@ class UserManager:
     def login_register(self,
                        username: str,
                        password: str,
-                       pw_conf: callable = None,  # simplifies testing
+                       pw_conf: callable,
                        teacher: bool = False):
         """Unified method to login/register users
 
         Args:
             username (str)
             password (str): passed as plain text, hashing happens within this method
-            pw_conf (callable, optional): used only upon registration
+            pw_conf (callable): used only upon registration
             teacher (bool, optional): for future reference
 
         Returns:
@@ -58,7 +58,7 @@ class UserManager:
 
         # user does not exist, registering here
         else:
-            if pw_conf and password != pw_conf():
+            if password != pw_conf():
                 raise WrongPassword("Registration failed",
                                     "Passwords don't match")
 
