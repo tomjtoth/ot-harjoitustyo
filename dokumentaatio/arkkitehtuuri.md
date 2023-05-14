@@ -171,6 +171,7 @@ sequenceDiagram
     UI->>UI: populate GUI controls, change TITLE of root window
     UI->>DrawingManager: set default cmd, fill, border
     UI->>DrawingManager: set_canvas(instance of Canvas)
+    UI->>DrawingManager: set_text_prompter(UI's public callback)
 
 
     UI-->>-User: wait for input
@@ -198,6 +199,9 @@ sequenceDiagram
     DrawingManager->>DrawingManager: store references in canv_hist
 
     DrawingManager-->>-UI: 
+
+    UI->>DrawingManager: set_text_prompter(UI's public callback)
+
 
 
     UI-->>-User: wait for input
@@ -252,14 +256,48 @@ sequenceDiagram
     DrawingManager->>DrawingManager: clear start coords and self._preview
     DrawingManager->>+Drawing: add(cmd, fill, border, *args, **kwargs)
     Drawing->>Drawing: append (cmd, args, kwargs) to content as tuple
+    Drawing-->>-DrawingManager: 
     DrawingManager-->>UI: 
     UI-->>-User: wait for next event
 
 ```
 
-Tässä vaiheessa käyttäjä on lisännyt ruutuun pienehkon (meillä oli vain 2 hiiren-raahaus tapahtumaa) __suorakaiteen__,  __punaisella__ reunalla ja __vihreällä__ täytteellä (oletuksean). Aktiivinen `Piirros` olio myös laittoi `b1_up` tapahtuman yhteydessä talteen oleelliset tiedot pirteestä. `VIIVA`:n lisääminen poikkeaa sen verran yllä kuvatulta, että sillä ei ole määritelty väri reunalle.
+Tässä vaiheessa käyttäjä on lisännyt ruutuun pienehkon (meillä oli vain 2 hiiren-raahaus tapahtumaa) __suorakaiteen__,  __punaisella__ reunalla ja __vihreällä__ täytteellä (oletuksean). Aktiivinen `Piirros` olio myös laittoi `b1_up` tapahtuman yhteydessä talteen oleelliset tiedot pirteestä. __Viivan__ lisääminen poikkeaa sen verran yllä kuvatulta, että sillä ei ole määritelty väri reunalle, joten tuo puuttuu `kwargs`:sta. __Tekstin__ lisääminen poikkeaa yhä enemmän lopulta 3 piirteeltä alla tavalla:
 
-`TEKSTI`:n lisääminen poikkeaa yhä enemmän lopulta 3 piirteeltä siten, että se heti laukeaa
+```mermaid
+---
+title: Tekstin lisääminen
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: left button pressed on Canvas
+    UI->>+UI: tkinter Event generated
+    UI->>DrawingManager: b1_dn(event)
+    UI-->>-User: wait for input
+
+    User->>+UI: drags mouse on Canvas
+    UI->>+UI: tkinter Event generated
+    UI->>DrawingManager: b1_mv(event)
+    UI-->>-User: wait for input
+
+    User->>+UI: left button released on Canvas
+    UI->>+UI: tkinter Event generated
+    UI->>+DrawingManager: b1_up(event)
+    DrawingManager->>+UI: call public text_prompter method
+    UI->>+User: prompt text
+    User-->>-UI: "jotain syöte"
+    UI-->>-DrawingManager: str
+    DrawingManager->>+UI: create_text(...)
+    UI-->>-DrawingManager: tkinter object ID
+    DrawingManager->>DrawingManager: append it to self._canv_hist
+    DrawingManager->>Drawing: add(cmd, *args, **kwargs)
+    DrawingManager-->>-UI: 
+    UI-->>-User: wait for input
+
+```
+
+Tekstin lisääminen oli hankalin, koska `DrawingManager`:in piti pystyä pyytää syötteen käyttäjältä siten, että *codebase* olisi edelleen eristettynä
 
 ### Piirteiden/värien valinta
 
@@ -287,40 +325,101 @@ sequenceDiagram
 ```
 
 
-
 ### Un-/redo toiminta
 
-Käyttäjällä on mahdollisuus perua ja palauttaa peruutut pirteet piirrokseen.
+Käyttäjällä on mahdollisuus perua ja palauttaa peruutut pirteet piirrokseen. Alla tapauksessa oletetaan, että piirrokseen on lisätty tasan 2 piirrettä.
 
 ```mermaid
 ---
-title: Piirteiden peruminen/palautus
+title: Piirteiden peruminen
 ---
 sequenceDiagram
     actor User
 
-    User->>+UI: "undo" pressed
+    User->>+UI: "undo" pressed 1st time
 
-    UI->>UI: PLACEHOLDER
+    UI->>+DrawingManager: undo()
+    DrawingManager->>+Drawing: undo()
+    Drawing->>Drawing: pop last feature from self._content
+    Drawing->>Drawing: append it to self._undo.stack
+    Drawing->>Drawing: 1 more still in contents
+    Drawing-->>-DrawingManager: return True
+    DrawingManager->>DrawingManager: pop last ID from self._canv_hist
+    DrawingManager->>UI: delete feature from Canvas by ID
+    DrawingManager-->>-UI: return True
+    UI->>UI: set undo/redo button states accordingly
+    UI-->>-User: wait for input
 
+    User->>+UI: "undo" pressed 2nd time
+
+    UI->>+DrawingManager: undo()
+    DrawingManager->>+Drawing: undo()
+    Drawing->>Drawing: pop last feature from self._content
+    Drawing->>Drawing: append it to self._undo.stack
+    Drawing->>Drawing: no more features in contents
+    Drawing-->>-DrawingManager: return False
+    DrawingManager->>DrawingManager: pop last ID from self._canv_hist
+    DrawingManager->>UI: delete feature from Canvas by ID
+    DrawingManager-->>-UI: return False
+    UI->>UI: set undo/redo button states accordingly
+    UI-->>-User: wait for input
+
+    User->>+UI: "undo" pressed 3rd time
+
+    UI->>+DrawingManager: undo()
+    DrawingManager->>+Drawing: undo()
+    Drawing->>Drawing: self._content is empty
+    Drawing-->>-DrawingManager: raise EmptyStack
+    DrawingManager-->>-UI: return False
+    UI->>UI: set undo/redo button states accordingly
+    UI-->>-User: wait for input
+
+```
+
+`Redo` toimii samalla periaatella, paitsi se `Drawing.redo()` palauttaa boolean arvon lisäksi palautettavaa piirettäkin, jotta DrawingManager pystyisi sitä lisätä uudelleen Canvas:iin.
+
+```mermaid
+---
+title: Peruttujen piirteiden palautus
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: "redo" pressed
+
+    UI->>+DrawingManager: redo()
+    DrawingManager->>+Drawing: redo()
+    Drawing->>Drawing: pop last feature from self._undo_stack
+    Drawing->>Drawing: append it to self._content
+    Drawing->>Drawing: more than 1 feature still in undo_stack
+    Drawing-->>-DrawingManager: return (True, feature)
+    DrawingManager->>+UI: create feature (cmd, *args, **kwargs)
+    UI-->>-DrawingManager: tkinter object ID
+    DrawingManager->>DrawingManager: self._canv_hist.append(ID)
+    DrawingManager-->>-UI: return True
+    UI->>UI: set undo/redo button states accordingly
     UI-->>-User: wait for input
 
 ```
 
 ### Piirroksen tallentaminen
 
-Loppujen lopuksi käyttäjä tallentaa piiroksensa.
-
+Loppujen lopuksi käyttäjä tallentaa piiroksensa, joka on joko ollut jo olemassa, tai on vasta luotu. Alla kaaviossa katsotaan uudne teoksen talletusta, tosiaan ero suurimmiltaan on `INSERT` vs `UPDATE` lause tietokantaan.
 ```mermaid
 ---
-title: Piirroksen tallentaminen
+title: Uuden piirroksen tallentaminen
 ---
 sequenceDiagram
     actor User
 
     User->>+UI: "Save and Exit" pressed
-
-    UI->>UI: PLACEHOLDER
+    UI->>UI: reset root window's TITLE
+    UI->>+DrawingManager: 
+    DrawingManager->>+Drawing: stringify()
+    Drawing-->>-DrawingManager: self._content as JSON
+    DrawingManager->>SQLite: INSERT int drawings ...
+    DrawingManager-->>-UI: 
+    UI->>UI: change to Menu view
 
     UI-->>-User: wait for input
 
