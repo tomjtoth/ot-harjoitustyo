@@ -1,7 +1,6 @@
 import json
 from entities.drawing import Drawing, EmptyStackError
 from backend.database import conn
-from backend.user_mgmt import user_mgr
 
 RECTANGLE = 0
 OVAL = 1
@@ -43,7 +42,7 @@ class DrawingManager:
             """, (user_id, )).fetchall()
         ]
 
-    def save_curr_dwg(self):
+    def save_curr_dwg(self, user_id: int):
         """Dumps the log (drawing contents) as JSON to SQLite
         """
         # existing drawing
@@ -64,7 +63,7 @@ class DrawingManager:
                 content
             ) values (?,?,?,?,?)
             """, (
-                user_mgr.get_curr_user().id,
+                user_id,
                 self._curr_dwg.name,
                 self._curr_dwg.width,
                 self._curr_dwg.height,

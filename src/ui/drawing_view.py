@@ -2,6 +2,7 @@ from tkinter import Button, Label, Canvas, Radiobutton, IntVar, DISABLED, NORMAL
 from ui.common import View, TITLE
 from ui.prompt_text import PromptText
 from backend.dwg_mgmt import dwg_mgr, RECTANGLE, OVAL, LINE, TEXT
+from backend.user_mgmt import user_mgr
 
 
 class DrawingView(View):
@@ -98,7 +99,7 @@ class DrawingView(View):
         """Saves the current drawing to database and changes view
         """
         self._master.title(TITLE)
-        dwg_mgr.save_curr_dwg()
+        dwg_mgr.save_curr_dwg(user_mgr.get_curr_user().id)
         self._handle_prev()
 
     def prompt_text(self):

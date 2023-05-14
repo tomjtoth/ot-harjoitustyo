@@ -73,7 +73,7 @@ class TestDrawing(unittest.TestCase):
 
 
     def test_0_save_empty_dwg(self):
-        dwg_mgr.save_curr_dwg()
+        dwg_mgr.save_curr_dwg(user_mgr.get_curr_user().id)
 
 
     def test_1_user_cannot_see_others_dwgs(self):
@@ -122,7 +122,7 @@ class TestDrawing(unittest.TestCase):
                 # relaese button 1
                 dwg_mgr.b1_up(EVENTS[4])
 
-        dwg_mgr.save_curr_dwg()
+        dwg_mgr.save_curr_dwg(user_mgr.get_curr_user().id)
 
 
     def test_4_dwg_stored_features(self):
