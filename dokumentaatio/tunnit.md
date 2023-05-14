@@ -25,4 +25,5 @@
 | 10.5  | 3  | issue1 export unification (DISCARDED) | %66
 | 11.5  | 2  | docstrings, code cleanup | %68
 | 13.5  | 6  | m1 dragging, previewing feature added, tests, R.I.P. class Database | %74
-|       | 74 | total |
+| 14.5  | 6  | docs, coverage-report opens htmlcov/index.html | %80
+|       | 80 | total |

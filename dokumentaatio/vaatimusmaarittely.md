@@ -53,3 +53,4 @@ Muutamaa kehitettävää mitkä varmasti eivät mahdu perustoiminnallisuuteen
 - [ ] _opettajat_ saavat tallentaa myös **template** -ina
 - [X] undo/redo toiminta
 - [ ] fontin koon ja tyypin säätö käyttäjän toimesta
+- [ ] free line toiminta

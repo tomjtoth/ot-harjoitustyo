@@ -12,19 +12,19 @@ Pakkaus `Ui` vastaa käyttäjän ja sovelluslogiikan vuorovaikutuksesta. `Backen
 
 ## Käyttöliittymä
 
-On 3 päänäkymää, ja 2 ponnahdusikkuna:
-- Kirjautumisnäkymä
-- Menu näkymä
+On 3 päänäkymää, ja 3 ponnahdusikkuna:
+- [Kirjautumisnäkymä](/src/ui/login_view.py)
+    - Uuden käyttäjän rekisteröinnissä pyydetään salasanaa uudelleen
+- [Menu näkymä](/src/ui/menu_view.py)
     - Uuden piirroksen tietojen näkymä
-- Piirtonäkymä
-    - Tekstin syötöikkuna
+- [Piirtonäkymä](/src/ui/drawing_view.py)
+    - Tekstin syöttöikkuna
 
-Näissä 3 päänäkymässä on yhteiset piirteet joita siirsin `View` luokkaan. Ne myös käyttävät saman ikkunan, joten kerralla vain 1 voi olla aktiivinen ja `Ui` luokka on vastuussa niitten vaihdosta. 
+Näissä 3 päänäkymässä on yhteiset piirteet joita siirsin [View](/src/ui/common.py) luokkaan. Ne myös käyttävät saman ikkunan, joten kerralla vain 1 voi olla aktiivinen ja `Ui` luokka on vastuussa niitten vaihdosta. 
 
-Login näkymä on yksinkertaistettu, ei ole erillistä näkymää rekisteröinnin varten, vaan uusia käyttäjiä luodaan suoraan annetulla `user:pass` kombolla.
+Login näkymä on yksinkertaistettu, ei ole erillistä näkymää rekisteröintiä varten, vaan uusia käyttäjiä luodaan suoraan annetulla `username`:`password` kombolla vahvistuksen jälkeen.
 
-Menu näkymässä käyttäjä saa valita omista piirroksistaan tai luoda uutta.
-Näkymä myös heittää ponnahdusikkunan johon syötetään uusien piirrosten nimi, leveys ja korkeus.
+Menu näkymässä käyttäjä saa valita omista piirroksistaan tai luoda uutta, jonka tapauksessa näkymä heittää ponnahdusikkunan johon syötetään uusien piirrosten nimi, leveys ja korkeus.
 
 Piirtonäkymässä yritin matkia kunnon vanha `MS Pain`t; käyttäjä voi säätää laukevien komentojen välillä:
 
@@ -32,13 +32,10 @@ Piirtonäkymässä yritin matkia kunnon vanha `MS Pain`t; käyttäjä voi säät
 - oval
 - viiva
 - teksti
-    - pyytää syötteen käyttäjältä
-
-Eka 3 komento pystyy värejäkin käsitellä, joita myös napeilla pystyy valita.
 
 ## Sovelluslogiikka
 
-Sovelluksessa 1 [Käyttäjä](../src/entities/user.py) saa omistaa monta [Piirrosta](../src/entities/drawing.py):
+Sovelluksessa 1 [Käyttäjä](/src/entities/user.py) saa omistaa monta [Piirrosta](/src/entities/drawing.py):
 
 ```mermaid
 classDiagram
@@ -53,32 +50,36 @@ class User {
 
 class Drawing {
     +String name
-    +Int id
     +Int width
     +Int height
+    +Int id
     #List content
+    #List undo_stack
 
     +add(cmd, *args, **kwargs)
     +reproduce()
     +stringify()
+    +undo()
+    +clear_undo_stack()
+    +redo()
+
 }
 ```
 
-Yritin eristää [Backend](../src/backend/backend.py) luokkaan sovelluksen niitä toimintoja joita en ois pystynyt järkevästi toteuttaa omissa pakkauksissaan.
-
-Luokan ainoa olio hoitaa esim:
+Yritin eristää [DrawingManager](/src/backend/dwg_mgmt.py) luokkaan sovelluksen niitä toimintoja jotkut vaikuttaa piirroksiin, myös [UserManager](/src/backend/user_mgmt.py) luokkaan ne toiminnot, jotkut liittyvät tiukasti autentikaatioon. Molemmat moduulit exportoivat 1-1 oliota itsestään, jotkut hoitavat:
 - kirjautumisen/rekisteröinnin
 - kuvan tallentamisen, listaamisen, modaamisen
 
 ```mermaid
 classDiagram
-    Backend "1" --> "0-1" User
+    UserManager "1" --> "0-1" User
+    DrawingManager "1" --> "0-1" Drawing
     User "1" --> "*" Drawing
 ```
 
 ## Pysyväistalletus
 
-_Backend_ hallitsee tietokantaa taustalla, jossa 4 taulua:
+Taustalla SQLite3 hoitaa pysyväistalletusta [conn](/src/backend/database.py) olion kautta, kannassa 4 taulua:
 
 - users
 - drawings
@@ -86,9 +87,13 @@ _Backend_ hallitsee tietokantaa taustalla, jossa 4 taulua:
 - teachers
 - templates
 
-2 jälkimmäistä on jatkokehitystä miettien jo luotu valmiiksi. `CREATE TABLE IF NOT EXISTS` lauseiden ansiosta tietokantaa ei tarvitse erikseen rakentaa. Python:in kokonaisluvut tallennan `INTEGER`, Stringit `TEXT` muodossa. 
-Olisi mennyt hirvee määrä resurssi keksiä ja normalisoida kaiken tarvitun taulun, joten piirrosten sisällön tallennus on varsin epätehokasta, JSON muodossa `TEXT`:ina. SQLite kuitenkin tukee myös json scalar funktioita, joten on myös mahdollista laajentaa sovellusta tässä muodossakin.
-Tarkempaa tiedot kannan rakenteesta löydät Backend luokan [create_scheme](../src/backend/backend.py) methodista.
+2 jälkimmäistä on jatkokehitystä miettien jo luotu valmiiksi. `CREATE TABLE IF NOT EXISTS` lauseiden ansiosta tietokantaa ei tarvitse erikseen rakentaa/alustaa. Python:in kokonaisluvut tallennan `INTEGER`, Stringit `TEXT` muodossa. 
+Resurssieni rajoitteista päädyin tallentaa piirrosten sisällön varsin epätehokkaasti, JSON muodossa `TEXT`:ina. SQLite kuitenkin tukee myös JSON scalar funktioita, joten on myös mahdollista laajentaa sovellusta tässä muodossakin!
+Tarkemmat tiedot löytyvät yllä moduulin `executescript` kutsusta.
+
+### Tiedosto sijainti
+
+Tietokantaa perustetaan juurihakemiston `backend.db` tiedostoon.
 
 ## Päätoiminnallisuudet
 
@@ -98,60 +103,225 @@ Jos käyttäjä ei ole olemassa, sitä rekisteröidään, pääsy seuraavaan nä
 
 ```mermaid
 ---
-title: Registration process
+title: Moitteeton rekisteröintiprosessi
 ---
 sequenceDiagram
-  actor User
-  participant UI
-  participant Backend
-  User->>+UI: click "Login/Register" button
-  UI->>+Backend: login_register("matti", "p4ssW0rD")
-  Backend->>+SQLite: select ... where username == 'matti'
-  SQLite-->>-Backend: 0 rows
-  Backend->>+SQLite: insert into users...;
-  SQLite-->>-Backend: last_row_id
-  Backend->>Backend: self._curr_user = User(...)
-  Backend-->>-UI: 
-  UI->>UI: change to MenuView
-  UI-->>-User: 
+    actor User
+    
+    User->>+UI: click "Login/Register" button
+    UI->>+UserManager: login_register("matti", "p4ssW0rD")
+    UserManager->>+SQLite: select ... where username == 'matti'
+    SQLite-->>-UserManager: 0 rows
+    UserManager->>+User: prompt password again
+    User-->>UserManager: password matches
+    UserManager->>+SQLite: insert into users...;
+    SQLite-->>-UserManager: last_row_id
+    UserManager->>UserManager: self._curr_user = User(...)
+    UserManager-->>-UI: 
+    UI->>UI: change to MenuView
+    UI-->>-User: 
 
 ```
 
-Alla "Wrong password" kaaviossa näkyy miten olemassa olevan käyttäjän autentikointi tapahtuu.
+Alla kaaviossa yksi esimerkki miten `UserManager` estää pääsyn ilman oikeeta salasanaa. Tosiaan `WrongPassword` poikkeausta heitetään myös kun rekisteöinnissä pyydetään vahvistamaan käyttäjän sen salasanan, eikä se täsmää ekaa syötettä.
 
 ```mermaid
 ---
-title: Wrong password
+title: Väärä salasana sisäänkirjautuen
 ---
 sequenceDiagram
-  actor User
-  participant UI
-  participant Backend
-  User->>+UI: click "Login/Register" button
-  UI->>+Backend: login_register("matti", "lalalalalalala")
-  Backend->>+SQLite: select password, ... where username == 'matti'
-  SQLite-->>-Backend: 1 row
-  Backend->>Backend: compare 2 passwords
-  Backend-->>-UI: raise WrongPassword
-  UI-->>-User: 
+    actor User
+    
+    User->>+UI: click "Login/Register" button
+    UI->>+UserManager: login_register("matti", "lalalalalalala")
+    UserManager->>+SQLite: select password, ... where username == 'matti'
+    SQLite-->>-UserManager: 1 row
+    UserManager->>UserManager: compare 2 passwords
+    UserManager-->>-UI: raise WrongPassword
+    UI-->>-User: 
+```
+
+### Piirrosten valinta ja lataus
+
+Menu näkymän tarkoitus on listata käyttäjän luomat piirrokset, uuden piirroksen luomisen mahdollistaminen, myös nappien avulla luoda yksiselittäistä tapaa päästä näkymien välissä eteenpäin (piirtämään) ja taksepääin (kirjautumalla ulos).
+
+```mermaid
+---
+title: Vaihto Menu näkymään ja uuden piirroksen luonti
+---
+sequenceDiagram
+    actor User
+
+    UserManager-->>+UI: login/register succeeded
+    UI->>UI: change to MenuView
+    UI->>+UserManager: get_curr_user()
+    UserManager-->>UI: instance of User
+    UI->>+DrawingManager: get_user_dwgs(user.id)
+    DrawingManager->>+SQLite: query
+    SQLite-->>-DrawingManager: possible rows
+    DrawingManager-->>-UI: [ possible Drawing instances ]
+    UI->>UI: populate listbox, finish creating view
+    UI-->>-User: wait for input
+
+    User->>+UI: <NEW DRAWING>
+    UI->>+User: prompt title, width, height
+    User-->>-UI: str, int, int
+    UI->>DrawingManager: set_curr_dwg(Drawing(name, width, height))
+    UI->>UI: change to DrawingView
+    UI->>UI: populate GUI controls, change TITLE of root window
+    UI->>DrawingManager: set default cmd, fill, border
+    UI->>DrawingManager: set_canvas(instance of Canvas)
+
+
+    UI-->>-User: wait for input
+```
+
+Yllä esitetty miten luodaan uuden piirroksen ja siirrytään piirtonäkymään kun piirros on tyhjä. Alla jatketaan siitä kohtaa, että kutsutaan `dwg_mgr.set_curr_dwg( ... )` ja käydään läpi miten olemassa olevat piirteet päätyvät täsmälleen samalla tavalla `tkinter.Canvas`:iin, kuten piirtämisen hetkellä ne olivat.
+
+```mermaid
+---
+title: Olemassa olevan piirroksen lataus
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: load existing dwg
+    UI->>DrawingManager: set_curr_dwg(instance of Drawing)
+    UI->>UI: change to DrawingView
+    UI->>UI: populate GUI controls, change TITLE of root window
+    UI->>DrawingManager: set default cmd, fill, border
+    UI->>+DrawingManager: set_canvas(instance of Canvas)
+    DrawingManager->>+Drawing: reproduce()
+    Drawing-->>-DrawingManager: generator of (cmd, *args, **kwargs)
+    DrawingManager->>+UI: populate Canvas with features
+    UI-->>-DrawingManager: tkinter object references
+    DrawingManager->>DrawingManager: store references in canv_hist
+
+    DrawingManager-->>-UI: 
+
+
+    UI-->>-User: wait for input
+```
+
+### Piirteiden lisääminen piirroksiin
+
+Yllä saatiin `Drawing.reproduce()` kutsuen 1 piirre kerralla, joita luotiin Canvas:iin uudelleen kuvan ladattaessa. Tässä seuraavassa kaaviossa lisätään pari piirrettä:
+```mermaid
+---
+title: Oletuspiirteen lisäy piirrokseen
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: left button pressed on Canvas
+
+    UI->>UI: tkinter Event generated
+    UI->>+DrawingManager: b1_dn(event)
+    DrawingManager->>DrawingManager: save start coords
+    DrawingManager-->>-UI: 
+    UI-->>-User: wait for next event
+
+
+    User->>+UI: drags mouse cursor
+
+    UI->>UI: tkinter Event generated
+    UI->>+DrawingManager: b1_mv(event)
+    DrawingManager->>+UI: draw feature with current (cmd, fill, border) to event.pos
+    UI-->>-DrawingManager: tkinter object ID
+    DrawingManager->>DrawingManager: store it in self._preview
+    DrawingManager-->>-UI: 
+    UI-->>-User: wait for next event
+
+    User->>+UI: drags mouse cursor
+
+    UI->>UI: tkinter Event generated
+    UI->>+DrawingManager: b1_mv(event)
+    DrawingManager->>UI: delete previous preview by ID
+    DrawingManager->>+UI: draw feature with current (cmd, fill, border) to event.pos
+    UI-->>-DrawingManager: tkinter object ID
+    DrawingManager->>DrawingManager: store it in self._preview
+    DrawingManager-->>-UI: 
+    UI-->>-User: wait for next event
+
+    User->>+UI: releases left button
+
+    DrawingManager->>UI: delete previous preview by ID
+    DrawingManager->>+UI: draw feature with current (cmd, fill, border) to event.pos
+    UI-->>-DrawingManager: tkinter object ID
+    DrawingManager->>DrawingManager: append it to self._canv_hist
+    DrawingManager->>DrawingManager: clear start coords and self._preview
+    DrawingManager->>+Drawing: add(cmd, fill, border, *args, **kwargs)
+    Drawing->>Drawing: append (cmd, args, kwargs) to content as tuple
+    DrawingManager-->>UI: 
+    UI-->>-User: wait for next event
 
 ```
 
+Tässä vaiheessa käyttäjä on lisännyt ruutuun pienehkon (meillä oli vain 2 hiiren-raahaus tapahtumaa) __suorakaiteen__,  __punaisella__ reunalla ja __vihreällä__ täytteellä (oletuksean). Aktiivinen `Piirros` olio myös laittoi `b1_up` tapahtuman yhteydessä talteen oleelliset tiedot pirteestä. `VIIVA`:n lisääminen poikkeaa sen verran yllä kuvatulta, että sillä ei ole määritelty väri reunalle.
+
+`TEKSTI`:n lisääminen poikkeaa yhä enemmän lopulta 3 piirteeltä siten, että se heti laukeaa
+
+### Piirteiden/värien valinta
+
+Alla kuvatulla tavalla käyttäjä pääsee valitsemaan missä vaiheessa tahansa tulevien piirteiden lajin __ovaaliksi__, jolla __keltainen__ reuna ja __sininen__ täyte.
+
 ```mermaid
 ---
-title: Right password
+title: Piirteiden ja värien valinta
 ---
 sequenceDiagram
-  actor User
-  participant UI
-  participant Backend
-  User->>+UI: click "Login/Register" button
-  UI->>+Backend: login_register("matti", "p4ssW0rD")
-  Backend->>+SQLite: select password, ... where username == 'matti'
-  SQLite-->>-Backend: 1 row
-  Backend->>Backend: compare 2 passwords
-  Backend->>Backend: self._curr_user = User(...)
-  Backend-->>-UI: 
-  UI-->>-User: 
+    actor User
+
+    User->>+UI: clicks OVAL radiobutton
+    UI->>DrawingManager: set_cmd(OVAL)
+    UI-->>-User: wait for input
+
+    User->>+UI: clicks left yellow button
+    UI->>DrawingManager: set_border("yellow")
+    UI-->>-User: wait for input
+
+    User->>+UI: clicks right blue button
+    UI->>DrawingManager: set_fill("blue")
+    UI-->>-User: wait for input
+
+```
+
+
+
+### Un-/redo toiminta
+
+Käyttäjällä on mahdollisuus perua ja palauttaa peruutut pirteet piirrokseen.
+
+```mermaid
+---
+title: Piirteiden peruminen/palautus
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: "undo" pressed
+
+    UI->>UI: PLACEHOLDER
+
+    UI-->>-User: wait for input
+
+```
+
+### Piirroksen tallentaminen
+
+Loppujen lopuksi käyttäjä tallentaa piiroksensa.
+
+```mermaid
+---
+title: Piirroksen tallentaminen
+---
+sequenceDiagram
+    actor User
+
+    User->>+UI: "Save and Exit" pressed
+
+    UI->>UI: PLACEHOLDER
+
+    UI-->>-User: wait for input
 
 ```

@@ -91,7 +91,7 @@ class DrawingManager:
             self._canv_hist.append(self._draw(feature, *coords, **kwargs))
 
     def set_cmd(self, cmd: int):
-        """Sets the currently initiated command
+        """Sets the command for future features
         """
         self._curr_cmd = cmd
 
@@ -101,12 +101,12 @@ class DrawingManager:
         self._text_prompter = prompt
 
     def set_fill(self, color: str):
-        """Sets the fill color for next features
+        """Sets the fill color for future features
         """
         self._curr_fill = color
 
     def set_border(self, color: str):
-        """Sets the border color for next features
+        """Sets the border color for future features
         """
         self._curr_border = color
 
@@ -121,6 +121,8 @@ class DrawingManager:
             tkinter.feature: a pointer to the last added feature
         """
 
+        # aiming to save some boilerplate here
+        # since _draw() is called from 2 places at least
         if not kwargs:
             kwargs = {
                 "fill": self._curr_fill,

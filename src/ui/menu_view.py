@@ -40,7 +40,7 @@ class MenuView(View):
         for i, dwg in enumerate(self._dwgs):
             self._lb_dwg.insert(i+1, dwg.name)
 
-        Button(self._frame, text='Let\'s draw!',
+        Button(self._frame, text="Let's draw!",
                command=self._proceed_to_next_view).grid()
 
         # add extra controls/functionalities

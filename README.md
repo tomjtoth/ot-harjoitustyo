@@ -1,16 +1,21 @@
-# Art+ (OhTe assignment)
+# Art +
 
 Sovelluksen avulla surkeimmat käyttäjätkin pystyy luoda mahtavia avantgarde kuvia!
 
-Hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittamiseen tarviit 2 klikkauksen, tekstiä laitetaan yhdellä
+
+## Kuvaus
+
+Tämä on Helsingin Yliopiston eräälle kursille tarkoitettu palautettava tehtävä.
+
 
 ## Dokumentaatio
 
 - [vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)
 - [arkkitehtuurikuvaus](dokumentaatio/arkkitehtuuri.md)
+- [testausdokumentti](dokumentaatio/testaus.md)
 - [työtunnit](dokumentaatio/tunnit.md)
-- [muutokset](dokumentaatio/changelog.md)
 - [julkaisut](https://github.com/tomjtoth/ot-harjoitustyo/releases)
+- [CHANGELOG](dokumentaatio/changelog.md)
 
 
 ## Asennus
@@ -19,12 +24,13 @@ Hiiren vasemman napin release on valvottu, suorakaiteen, ovalin, viivan laittami
     - Arch Linux:issa asenna myös paketti _tk_ komennolla `sudo pacman -Syy tk`
 - Käynnistä sovellus komennolla `poetry run invoke start`
 
+
 ## Muut komentorivitoiminnot
 
-Näihin varmaan tarviit loputkin riippuvuuksista, joten aja `poetry install` uudelleen ilman se lisälippu.
+Näihin tarvitset loputkin riippuvuuksista, joten aja `poetry install` uudelleen ilman lisälippua.
 
 - testaaminen `poetry run invoke test` komennolla
 - kattavuuden tuonti `poetry run invoke coverage-report` komennolla
-    - htmlcov/index.html avattava selaimessa
+    - `/htmlcov/index.html` avattava selaimessa` Win32` ympäristössä käsin
 - linting `poetry run invoke lint` komennolla
-
+- formatting `poetry run invok format` komennolla

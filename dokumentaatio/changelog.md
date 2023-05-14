@@ -40,3 +40,4 @@
 - removed class Database (KISS)
 - tests broken to smaller pieces
   - strict dependency of order, failed to fix it without introducing numbers in classnames...
+- `poetry run invoke coverage-report` now opens the generated index.html IF NOT on win32
