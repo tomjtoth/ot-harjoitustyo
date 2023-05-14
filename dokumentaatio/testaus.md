@@ -16,7 +16,7 @@ Kuten yllä mainitsin, rakensin testit "ylhältä alaspäin" mieluummin kuin alh
 
 ### Testikattavuus
 
-![coverage report](/dokumentaatio/coverage.png)
+![](/dokumentaatio/pics/coverage.png)
 
 ## Järjestelmäkattavuus
 
