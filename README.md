@@ -10,6 +10,7 @@ Tämä on Helsingin Yliopiston eräälle kursille tarkoitettu palautettava teht�
 
 ## Dokumentaatio
 
+- [käyttöohje](dokumentaatio/ohje.md)
 - [vaatimusmäärittely](dokumentaatio/vaatimusmaarittely.md)
 - [arkkitehtuurikuvaus](dokumentaatio/arkkitehtuuri.md)
 - [testausdokumentti](dokumentaatio/testaus.md)
